@@ -1,0 +1,6 @@
+[submodule "submodules/common"]
+	path = submodules/common
+	url = https://github.com/pantos-io/common.git
+[submodule "submodules/client-library"]
+	path = submodules/client-library
+	url = https://github.com/pantos-io/client-library.git
