@@ -34,6 +34,17 @@ The Pantos Client CLI requires **Python 3.10**. Ensure that you have the correct
 
 ### 2.2  Installation Steps
 
+#### Clone the repository
+
+Clone the repository to your local machine:
+
+```bash
+$ git clone https://github.com/pantos-io/client-library.git
+$ cd client-library
+$ git submodule init
+$ git submodule update --remote
+```
+
 #### Virtual environment
 
 Create a virtual environment from the repository's root directory:
