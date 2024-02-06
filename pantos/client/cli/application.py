@@ -8,7 +8,7 @@ from pantos.client.cli.configuration import load_config
 
 
 def initialize_application() -> None:
-    """Intialize the client CLI application.
+    """Initialize the client CLI application.
 
     """
     logging.basicConfig(level=logging.WARNING)
