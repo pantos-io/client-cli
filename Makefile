@@ -1,3 +1,31 @@
+.PHONY: check-mypy
+check-mypy:
+	@which mypy > /dev/null || (echo "mypy is not installed, please install it to continue" && false)
+
+.PHONY: check-yapf
+check-yapf:
+	@which yapf > /dev/null || (echo "yapf is not installed, please install it to continue" && false)
+
+.PHONY: check-flake8
+check-flake8:
+	@which flake8 > /dev/null || (echo "flake8 is not installed, please install it to continue" && false)
+
+.PHONY: check-isort
+check-isort:
+	@which isort > /dev/null || (echo "isort is not installed, please install it to continue" && false)
+
+.PHONY: check-bandit
+check-bandit:
+	@which bandit > /dev/null || (echo "bandit is not installed, please install it to continue" && false)
+
+.PHONY: check-pytest
+check-pytest:
+	@which pytest > /dev/null || (echo "pytest is not installed, please install it to continue" && false)
+
+.PHONY: check-docker
+check-docker:
+	@which docker > /dev/null || (echo "Docker is not installed, please install it to continue" && false)
+
 .PHONY: dist
 dist: wheel docker
 
@@ -5,27 +33,27 @@ dist: wheel docker
 code: check format lint sort bandit test
 
 .PHONY: check
-check:
+check: check-mypy
 	mypy pantos/client/cli
 
 .PHONY: format
-format:
+format: check-yapf
 	yapf --in-place --recursive pantos/client/cli tests
 
 .PHONY: lint
-lint:
+lint: check-flake8
 	flake8 pantos/client/cli tests
 
 .PHONY: sort
-sort:
+sort: check-isort
 	isort --force-single-line-imports pantos/client/cli tests
 
 .PHONY: bandit
-bandit:
+bandit: check-bandit
 	bandit -r pantos/client/cli tests --quiet --configfile=.bandit
 
 .PHONY: test
-test:
+test: check-pytest
 	python -m pytest tests
 
 .PHONY: coverage
@@ -44,7 +72,7 @@ dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION)-py3-none-any.whl: environmen
 	rm pantos/pantos-client-library.conf
 
 .PHONY: docker
-docker: dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION).docker
+docker: check-docker dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION).docker
 
 dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION).docker: environment-variables Dockerfile pantos/ pantos-client-cli.conf.$(PANTOS_CLIENT_CLI_ENVIRONMENT) pantos-client-library.conf.$(PANTOS_CLIENT_CLI_ENVIRONMENT) requirements.txt submodules/client-library/pantos/client/library/ submodules/common/pantos/common/
 	docker build -t pantosio/pantos-client --build-arg environment=$(PANTOS_CLIENT_CLI_ENVIRONMENT) .
@@ -60,7 +88,7 @@ uninstall:
 	python3 -m pip uninstall -y pantos-client-cli
 
 .PHONY: clean
-clean:
+clean: check-docker
 	rm -r -f build/
 	rm -r -f dist/
 	rm -r -f pantos_client_cli.egg-info/
