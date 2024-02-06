@@ -76,3 +76,22 @@ endif
 ifndef PANTOS_CLIENT_CLI_VERSION
 	$(error PANTOS_CLIENT_CLI_VERSION is undefined)
 endif
+
+.PHONY: help
+help:
+	@echo "Available targets:"
+	@echo "  dist       - Build both the wheel package and the Docker image."
+	@echo "  code       - Run checks, formatting, linting, sorting, security analysis, and tests."
+	@echo "  check      - Perform type checks on the code."
+	@echo "  format     - Format the codebase using yapf."
+	@echo "  lint       - Lint the codebase using flake8."
+	@echo "  sort       - Sort import statements using isort."
+	@echo "  bandit     - Perform security analysis using bandit."
+	@echo "  test       - Run tests using pytest."
+	@echo "  coverage   - Generate a test coverage report and remove the coverage file."
+	@echo "  wheel      - Build a wheel package for the project."
+	@echo "  docker     - Build a Docker image for the project."
+	@echo "  install    - Install the project using the built wheel package."
+	@echo "  uninstall  - Uninstall the project."
+	@echo "  clean      - Clean the project by removing build artifacts and Docker images."
+	@echo "  help       - Display this help message."
