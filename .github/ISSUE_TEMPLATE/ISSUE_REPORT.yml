@@ -30,11 +30,11 @@ body:
   - type: dropdown
     id: version
     attributes:
-      label: Network
-      description: Which network can the issue be reproduced on?
+      label: Installation Type
+      description: How are you running the software?
       options:
-        - Local
-        - Testnet
+        - Wheel
+        - Docker
       default: 0
     validations:
       required: true
