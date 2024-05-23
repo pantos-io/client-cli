@@ -52,25 +52,8 @@ coverage:
 	poetry run python3 -m pytest --cov-report term-missing --cov=pantos tests
 
 .PHONY: wheel
-wheel: dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION)-py3-none-any.whl
-
-dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION)-py3-none-any.whl: pantos/ client-cli.yml client-library.yml client-library.publish.env pyproject.toml submodules/client-library/pantos/client/library/ submodules/common/pantos/common/
-	cp client-cli.yml pantos/client-cli.yml
-	cp client-library.yml pantos/client-library.yml
-	cp client-library.publish.env pantos/client-library.env
-	rm pantos/common
-	rm pantos/client/library
-	cp -R submodules/common/pantos/common/ pantos/common
-	cp -R submodules/client-library/pantos/client/library pantos/client/library
-	poetry build -f wheel
-	rm pantos/client-cli.yml
-	rm pantos/client-library.yml
-	rm pantos/client-library.env
-	rm -rf pantos/common
-	rm -rf pantos/client/library
-	ln -sf ../submodules/common/pantos/common pantos/common
-	ln -sf ../../submodules/client-library/pantos/client/library pantos/client/library
-
+wheel:
+	poetry build
 
 .PHONY: docker
 docker: dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION).docker

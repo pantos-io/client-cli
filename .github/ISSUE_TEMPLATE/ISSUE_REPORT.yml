@@ -2,7 +2,7 @@ name: Bug Report
 description: File a bug report
 title: "[Bug]: "
 labels: ["bug", "triage"]
-projects: ["pantos-io/1"]
+projects: ["pantos-io/5"]
 assignees:
   - pantos-io/blockchain-backend
 body:
@@ -33,7 +33,6 @@ body:
       label: Installation Type
       description: How are you running the software?
       options:
-        - Debian Package
         - Wheel
         - Docker
       default: 0
