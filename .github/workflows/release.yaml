@@ -2,6 +2,7 @@ name: Release Workflow
 
 run-name: ${{ (github.event.release.prerelease && 'Beta') || 'Prod'}} Release for ${{ github.repository }} - ${{ github.event.release.tag_name }}
 
+
 on:
   release:
     # Triggered on Pre-Releases and Releases
@@ -14,6 +15,7 @@ concurrency:
 jobs:
   define-environment:
     runs-on: ubuntu-latest
+
     outputs:
       version: ${{ steps.get-environment.outputs.version }}
     steps:
@@ -21,7 +23,6 @@ jobs:
         with:
           disable-sudo: true
           egress-policy: audit
-
       - name: Configure Environment
         id: get-environment
         run: |
@@ -177,4 +178,5 @@ jobs:
           allowUpdates: true
           tag: ${{ github.event.release.tag_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
+
 
