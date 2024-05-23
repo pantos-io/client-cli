@@ -18,6 +18,7 @@ jobs:
       - uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
+      
       - uses: actions/checkout@v4
 
       - name: Set up QEMU
@@ -58,8 +59,9 @@ jobs:
       - uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
+     
       - uses: actions/checkout@v4
-
+      
       - name: Install dependencies
         uses: pantos-io/ci-workflows/.github/actions/install-python-deps@v1
 
