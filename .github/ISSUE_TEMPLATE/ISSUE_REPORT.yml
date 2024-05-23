@@ -2,7 +2,7 @@ name: Bug Report
 description: File a bug report
 title: "[Bug]: "
 labels: ["bug", "triage"]
-projects: ["pantos-io/1"]
+projects: ["pantos-io/4"]
 assignees:
   - pantos-io/blockchain-backend
 body:
@@ -30,12 +30,11 @@ body:
   - type: dropdown
     id: version
     attributes:
-      label: Installation Type
-      description: How are you running the software?
+      label: Network
+      description: Which network can the issue be reproduced on?
       options:
-        - Debian Package
-        - Wheel
-        - Docker
+        - Local
+        - Testnet
       default: 0
     validations:
       required: true
