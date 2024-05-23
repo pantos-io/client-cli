@@ -1,5 +1,7 @@
 name: Release Workflow
+
 run-name: ${{ (github.event.release.prerelease && 'Beta') || 'Prod'}} Release for ${{ github.repository }} - ${{ github.event.release.tag_name }}
+
 on:
   release:
     # Triggered on Pre-Releases and Releases
@@ -12,13 +14,14 @@ concurrency:
 jobs:
   define-environment:
     runs-on: ubuntu-latest
-    if: (!github.event.release.draft)
     outputs:
-      deployment_environment: ${{ steps.get-environment.outputs.deployment_environment }}
-      deployment_longname: ${{ steps.get-environment.outputs.deployment_longname }}
-      deployment_pypi_environment: ${{ steps.get-environment.outputs.deployment_pypi_environment }}
-      deployment_url: ${{ steps.get-environment.outputs.deployment_url }}
+      version: ${{ steps.get-environment.outputs.version }}
     steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
       - name: Configure Environment
         id: get-environment
         run: |
@@ -28,168 +31,100 @@ jobs:
             echo "::error title=Invalid Release::Release must be tagged with a valid SemVer version"
             exit 1
           fi
-          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
-            echo "::notice title=Deployment Environment::Deployment for Test"
-            echo "deployment_environment=-rc" >> $GITHUB_OUTPUT
-            echo "deployment_longname=Beta" >> $GITHUB_OUTPUT
-            echo "deployment_pypi_environment=test-pypi" >> $GITHUB_OUTPUT
-            echo "deployment_url=https://test.pypi.org/p/pantos-client-cli" >> $GITHUB_OUTPUT
-          else
-            echo "::notice title=Deployment Environment::Deployment for Prod"
-            echo "deployment_environment=" >> $GITHUB_OUTPUT
-            echo "deployment_longname=Prod" >> $GITHUB_OUTPUT
-            echo "deployment_pypi_environment=pypi" >> $GITHUB_OUTPUT
-            echo "deployment_url=https://pypi.org/p/pantos-client-cli" >> $GITHUB_OUTPUT
-          fi
+          echo "version=$(semver get release ${{ github.event.release.tag_name }})" >> $GITHUB_OUTPUT
 
-  publish-docker:
-    name: Publish docker image for ${{ needs.define-environment.outputs.deployment_longname }}
-    needs: [define-environment]
-    environment: 
-      name: dockerhub
-      url: ${{ steps.set-output-url.outputs.deployment_dockerhub_url }}
+  build:
+    name: Build Package
+    needs: define-environment
     runs-on: ubuntu-latest
     steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
-          token: ${{ secrets.GH_TOKEN }}
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        id: buildx
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-v1.0-client-cli-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-v1.0-client-cli-
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push
-        run: |
-          docker buildx build \
-            --cache-from=type=local,src=/tmp/.buildx-cache \
-            --cache-to=type=local,dest=/tmp/.buildx-cache \
-            --platform=linux/amd64,linux/arm64 \
-            --build-arg version=${{ github.event.release.tag_name }} \
-            --builder ${{ steps.buildx.outputs.name }} \
-            --push \
-            --tag pantosio/client-cli:latest${{ needs.define-environment.outputs.deployment_environment }} \
-            --tag pantosio/client-cli:${{ github.event.release.tag_name }}${{ needs.define-environment.outputs.deployment_environment }} \
-            .
-      - name: Set output url
-        id: set-output-url
-        run: |
-          echo "deployment_dockerhub_url=https://hub.docker.com/r/pantosio/client-cli/tags?name=${{ github.event.release.tag_name }}${{ needs.define-environment.outputs.deployment_environment }}" >> $GITHUB_OUTPUT
-
-  publish-pypi:
-    name: Publish to ${{ needs.define-environment.outputs.deployment_pypi_environment }}
-    needs: [define-environment]
-    runs-on: ubuntu-latest
-    environment:
-      name: ${{ needs.define-environment.outputs.deployment_pypi_environment }}
-      url: ${{ needs.define-environment.outputs.deployment_url }}
-    permissions:
-      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
-          token: ${{ secrets.GH_TOKEN }}
 
       - uses: pantos-io/ci-workflows/.github/actions/install-poetry@v1
 
       - name: Build package
-        run: make wheel
+        run: |
+          make check-version VERSION=${{ needs.define-environment.outputs.version }}
+          make build
+
+      - name: Freeze dependencies
+        run: |
+          poetry self add poetry-plugin-freeze
+          poetry freeze-wheel
+          # Copy the file "METADATA" from the wheel to "PKG-INFO" in the sdist
+          # Unzip wheel and sdist
+          mkdir tmp
+          cp dist/*.whl tmp/wheel.zip
+          unzip tmp/wheel.zip -d tmp/wheel/
+          # Untar sdist
+          mkdir tmp/sdist
+          tar -xzf dist/*.tar.gz -C tmp/sdist/
+          # Copy the file
+          cp tmp/wheel/*.dist-info/METADATA tmp/sdist/*/PKG-INFO
+          # Tar the sdist again
+          tar -czf dist/$(ls dist | grep .tar.gz) -C tmp/sdist/ .
+          # Remove the temporary directories
+          rm -rf tmp
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: client-cli
+          name: build
           path: dist
 
-      - name: Publish package distributions to ${{ needs.define-environment.outputs.deployment_pypi_environment }}
+  publish-pypi:
+    name: Publish to PyPi
+    needs: [define-environment, build]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/pantos-${{ github.repository }}/${{ needs.define-environment.outputs.version }}
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+    steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: dist
+
+      - name: Publish package distributions to PyPi
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository-url: ${{ needs.define-environment.outputs.deployment_pypi_environment == 'test-pypi' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
-
-  snapshot:
-    runs-on: ubuntu-latest
-    if: (!github.event.release.prerelease)
-    outputs:
-      commit_hash: ${{ steps.push-snapshot.outputs.commit_hash }}
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-      - name: Snapshot repo
-        uses: actions/checkout@v3
-        with:
-          repository: pantos-io/client-cli
-          path: ./client-cli
-          token: ${{ secrets.GH_TOKEN }}
-      - name: Copy files
-        run: |
-          if [ ! -d ./client-cli/pantos/ ]; then mkdir ./client-cli/pantos/; fi
-          cp -R ./pantos/* ./client-cli/pantos/
-          git submodule set-url submodules/common https://github.com/pantos-io/common.git
-          git submodule set-url submodules/client-library https://github.com/pantos-io/client-library.git
-          cp ./.coveragerc ./.gitignore ./.gitmodules ./.pre-commit-config.yaml Dockerfile ./client-cli.yml ./Makefile ./pantos-client.sh ./README.md ./LICENSE.md ./pyproject.toml ./poetry.lock ./CODE_OF_CONDUCT.md ./requirements.txt ./setup.py ./client-cli/
-          mkdir -p ./client-cli/.github/ISSUE_TEMPLATE
-          cp ./.github/ISSUE_TEMPLATE/ISSUE_REPORT.yml ./client-cli/.github/ISSUE_TEMPLATE/ISSUE_REPORT.yml
-          cp ./client-cli.publish.env ./client-cli/client-cli.env
-          if [ ! -L ./client-cli/.style.yapf ]; then ln -s submodules/common/.style.yapf ./client-cli/.style.yapf; fi
-          if [ ! -L ./client-cli/.bandit ]; then ln -s submodules/common/.bandit ./client-cli/.bandit; fi
-          if [ ! -L ./client-cli/client-library.yml ]; then ln -s submodules/client-library/client-library.yml ./client-cli/client-library.yml; fi
-          if [ ! -L ./client-cli/client-library.env ]; then ln -s submodules/client-library/client-library.env ./client-cli/client-library.env; fi
-          cd ./client-cli
-          if [ ! -d ./submodules/common ]; then git submodule add https://github.com/pantos-io/common.git submodules/common; else git submodule update --remote; fi
-          if [ ! -d submodules/client-library ]; then git submodule add https://github.com/pantos-io/client-library.git submodules/client-library; else git submodule update --remote; fi
-      - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-          git_user_signingkey: true
-          git_commit_gpgsign: true
-      - name: Push to snapshot repo
-        id: push-snapshot
-        run: |
-          cd ./client-cli
-          git config --global user.email "<>"
-          git config --global user.name "Pantos Snapshoter"
-          git add .
-          git commit -m "Pushing a snapshot for $GITHUB_REF_NAME"
-          git push --set-upstream origin main
-          # Output the commit hash
-          echo "commit_hash=$(git rev-parse HEAD) >> $GITHUB_OUTPUT"
+          print-hash: true
+          repository-url: 'https://upload.pypi.org/legacy/'
 
   add-assets:
     name: Add Assets to the ${{ github.event.release.tag_name }} Release
-    needs: publish-pypi
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
     steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
       - uses: actions/download-artifact@v4
         with:
-          name: client-cli
+          name: build
           path: dist
 
       - name: List directory
         run: |
+          mkdir -p release
           cp dist/*.whl release/
 
       - uses: sigstore/gh-action-sigstore-python@v2.1.1
@@ -198,7 +133,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: signed-client-cli
+          name: signed-build
           path: release/*.whl
 
       - name: Upload release assets
@@ -209,43 +144,9 @@ jobs:
           overwrite: true
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.event.release.tag_name }}
-
-  propagate-public-release:
-    name: Creates a public release and uploads assets as ${{ github.event.release.tag_name }}
-    needs: [add-assets, snapshot]
-    # Disable the job for the moment being
-    runs-on: ubuntu-latest
-    steps:
+      
       - uses: robinraju/release-downloader@v1.9
-        with:
-          tag: ${{ github.event.release.tag_name }}
-          tarBall: true
-          zipBall: true
-          fileName: "*"
-          out-file-path: release
-          preRelease: ${{ github.event.release.prerelease }}
-          token: ${{ secrets.GH_TOKEN }}
-
-      - name: List directory
-        run: |
-          ls -lha release
-
-      - name: Create new Release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "./release/*"
-          prerelease: ${{ github.event.release.prerelease }}
-          artifactErrorsFailBuild: true
-          removeArtifacts: true
-          allowUpdates: true
-          body: ${{ github.event.release.body }}
-          tag: ${{ github.event.release.tag_name }}
-          commit: ${{ needs.snapshot.outputs.commit_hash }}
-          token: ${{ secrets.GH_TOKEN }}
-          owner: pantos-io
-          repo: client-cli
-
-      - uses: robinraju/release-downloader@v1.9
+        name: Download tarball
         with:
           tag: ${{ github.event.release.tag_name }}
           tarBall: true
@@ -253,8 +154,8 @@ jobs:
           fileName: '*'
           out-file-path: external-release
           preRelease: ${{ github.event.release.prerelease }}
-          token: ${{ secrets.GH_TOKEN }}
-          repository: pantos-io/client-cli
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
 
       - name: List directory
         run: |
@@ -275,6 +176,5 @@ jobs:
           artifactErrorsFailBuild: true
           allowUpdates: true
           tag: ${{ github.event.release.tag_name }}
-          token: ${{ secrets.GH_TOKEN }}
-          owner: pantos-io
-          repo: client-cli
+          token: ${{ secrets.GITHUB_TOKEN }}
+
