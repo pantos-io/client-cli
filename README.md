@@ -1,3 +1,8 @@
+<img src="https://raw.githubusercontent.com/pantos-io/client-cli/img/pantos-logo-full.svg" alt="Pantos logo" align="right" width="120" />
+
+[![CI](https://github.com/pantos-io/client-cli/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/pantos-io/client-cli/actions/workflows/ci.yaml) 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pantos-io_client-cli2&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pantos-io_client-cli2)
+
 # Pantos Client CLI
 
 ## 1. Introduction
