@@ -6,4 +6,4 @@ python=python3
 script_path=`readlink -f "$0"`
 src_dir_path=`dirname "$script_path"`
 
-PYTHONPATH="$PYTHONPATH:$src_dir_path" $python -m pantos.client.cli "$@"
+PYTHONPATH="$PYTHONPATH:$src_dir_path" $python -m pantos.cli "$@"

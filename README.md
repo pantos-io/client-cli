@@ -30,7 +30,26 @@ One of the most significant advantages of using Pantos is that the protocol has 
 
 #### Python Version
 
-The Pantos Client CLI requires **Python 3.10**. Ensure that you have the correct Python version installed before the installation steps. You can download the latest version of Python from the official [Python website](https://www.python.org/downloads/).
+The Pantos Client CLI supports **Python 3.10** or higher. Ensure that you have the correct Python version installed before the installation steps. You can download the latest version of Python from the official [Python website](https://www.python.org/downloads/).
+
+#### Library Versions
+
+The Pantos Client CLI has been tested with the library versions specified in **poetry.lock**.
+
+#### Poetry
+
+Poetry is our tool of choice for dependency management and packaging.
+
+Installing: 
+https://python-poetry.org/docs/#installing-with-the-official-installer
+or
+https://python-poetry.org/docs/#installing-with-pipx
+
+By default poetry creates the venv directory under under ```{cache-dir}/virtualenvs```. If you opt for creating the virtualenv inside the project’s root directory, execute the following command:
+
+```bash
+poetry config virtualenvs.in-project true
+```
 
 ### 2.2  Installation Steps
 
@@ -45,23 +64,12 @@ $ git submodule init
 $ git submodule update --remote
 ```
 
-#### Virtual environment
+#### Libraries
 
-Create a virtual environment from the repository's root directory:
-
-```bash
-$ python -m venv .venv
-```
-
-Activate the virtual environment:
+Create the virtual environment and install the dependencies:
 
 ```bash
-$ source .venv/bin/activate
-```
-
-Install the required packages:
-```bash
-$ python -m pip install -r requirements.txt
+$ poetry install --no-root
 ```
 
 ## 3. Usage
@@ -70,10 +78,10 @@ $ python -m pip install -r requirements.txt
 
 The CLI comes with two configurations.
 
-1. A configuration for the Pantos Client Library can be found in **pantos-client-library.conf**.
+1. A configuration for the Pantos Client Library can be found in **client-library.yml**.
 The library already has a set configuration for our testnet environment, but feel free to adapt it to your needs.
 
-2. A configuration for the Pantos Client CLI can be found in **pantos-client-cli.conf**. Make sure to replace the keystore file path and the password with your private keystore.
+2. A configuration for the Pantos Client CLI can be found in **client-cli.yml**. Make sure to replace the keystore file path and the password with your private keystore.
 
 ### 3.2 Examples
 

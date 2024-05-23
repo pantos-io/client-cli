@@ -1,0 +1,44 @@
+application:
+    debug: !ENV tag:yaml.org,2002:bool ${APP_DEBUG:false}
+
+blockchains:
+    avalanche:
+        active: !ENV tag:yaml.org,2002:bool ${AVALANCHE_ACTIVE:true}
+        keystore:
+            file: !ENV ${AVALANCHE_KEYSTORE_FILE:my_client.keystore}
+            password: !ENV ${AVALANCHE_KEYSTORE_PASSWORD}
+    bnb_chain:
+        active: !ENV tag:yaml.org,2002:bool ${BNB_CHAIN_ACTIVE:true}
+        keystore:
+            file: !ENV ${BNB_CHAIN_KEYSTORE_FILE:my_client.keystore}
+            password: !ENV ${BNB_CHAIN_KEYSTORE_PASSWORD}
+    celo:
+        active: !ENV tag:yaml.org,2002:bool ${CELO_ACTIVE:true}
+        keystore:
+            file: !ENV ${CELO_KEYSTORE_FILE:my_client.keystore}
+            password: !ENV ${CELO_KEYSTORE_PASSWORD}
+    cronos:
+        active: !ENV tag:yaml.org,2002:bool ${CRONOS_ACTIVE:true}
+        keystore:
+            file: !ENV ${CRONOS_KEYSTORE_FILE:my_client.keystore}
+            password: !ENV ${CRONOS_KEYSTORE_PASSWORD}
+    ethereum:
+        active: !ENV tag:yaml.org,2002:bool ${ETHEREUM_ACTIVE:true}
+        keystore:
+            file: !ENV ${ETHEREUM_KEYSTORE_FILE:my_client.keystore}
+            password: !ENV ${ETHEREUM_KEYSTORE_PASSWORD}
+    fantom:
+        active: !ENV tag:yaml.org,2002:bool ${FANTOM_ACTIVE:true}
+        keystore:
+            file: !ENV ${FANTOM_KEYSTORE_FILE:my_client.keystore}
+            password: !ENV ${FANTOM_KEYSTORE_PASSWORD}
+    polygon:
+        active: !ENV tag:yaml.org,2002:bool ${POLYGON_ACTIVE:false}
+        keystore:
+            file: !ENV ${POLYGON_KEYSTORE_FILE:my_client.keystore}
+            password: !ENV ${POLYGON_KEYSTORE_PASSWORD}
+    solana:
+        active: !ENV tag:yaml.org,2002:bool ${SOLANA_ACTIVE:false}
+        keystore:
+            file: !ENV ${SOLANA_KEYSTORE_FILE:my_client.keystore}
+            password: !ENV ${SOLANA_KEYSTORE_PASSWORD}

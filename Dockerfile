@@ -1,23 +1,26 @@
-FROM python:3.10-alpine
+FROM python:3.12-alpine
 
-ARG environment
+ARG environment=testnet
+ARG version=1.1.0
 
-RUN apk update && apk add gcc libc-dev
+ENV PANTOS_CLIENT_VERSION=${version}
 
-WORKDIR /pantos-client
+RUN apk update && apk add gcc libc-dev libffi-dev
 
-COPY setup.py ./
+WORKDIR /pantos-cli
 
-RUN python -m pip install --no-cache-dir .
+COPY pyproject.toml poetry.lock ./
 
-RUN mkdir -p ./pantos/client
+RUN python3 -m pip install poetry
 
-COPY pantos/__init__.py ./pantos/
-COPY pantos/client/__init__.py ./pantos/client/
-COPY submodules/common/pantos/common ./pantos/common
-COPY submodules/client-library/pantos/client/library ./pantos/client/library
-COPY pantos/client/cli ./pantos/client/cli
-COPY pantos-client-cli.conf.${environment} ./pantos-client-cli.conf
-COPY pantos-client-library.conf.${environment} ./pantos-client-library.conf
+RUN poetry install --only main --no-interaction --no-cache --no-root
 
-ENTRYPOINT ["python", "-m", "pantos.client.cli"]
+RUN mkdir -p ./pantos/cli
+
+COPY pantos/cli ./pantos/cli
+COPY client-cli.yml .
+COPY client-library.yml .
+COPY client-cli.publish.env client-cli.env
+COPY client-library.env client-library.env
+
+ENTRYPOINT ["poetry", "run", "python3", "-m", "pantos.cli"]

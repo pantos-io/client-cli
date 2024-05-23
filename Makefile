@@ -1,63 +1,92 @@
+PANTOS_CLIENT_CLI_VERSION := $(shell poetry version -s)
+PYTHON_FILES := pantos/cli tests
+
 .PHONY: dist
 dist: wheel docker
+
+.PHONY: build
+build:
+	poetry build
 
 .PHONY: code
 code: check format lint sort bandit test
 
 .PHONY: check
 check:
-	mypy pantos/client/cli
+	poetry run mypy $(PYTHON_FILES)
 
 .PHONY: format
 format:
-	yapf --in-place --recursive pantos/client/cli tests
+	poetry run yapf --in-place --recursive $(PYTHON_FILES)
+
+.PHONY: format-check
+format-check:
+	poetry run yapf --diff --recursive $(PYTHON_FILES)
 
 .PHONY: lint
 lint:
-	flake8 pantos/client/cli tests
+	poetry run flake8 $(PYTHON_FILES)
 
 .PHONY: sort
 sort:
-	isort --force-single-line-imports pantos/client/cli tests
+	poetry run isort --force-single-line-imports $(PYTHON_FILES)
+
+.PHONY: sort-check
+sort-check:
+	poetry run isort --force-single-line-imports $(PYTHON_FILES) --check-only
 
 .PHONY: bandit
 bandit:
-	bandit -r pantos/client/cli tests --quiet --configfile=.bandit
+	poetry run bandit -r $(PYTHON_FILES) --quiet --configfile=.bandit
+
+.PHONY: bandit-check
+bandit-check:
+	poetry run bandit -r $(PYTHON_FILES) --configfile=.bandit
 
 .PHONY: test
 test:
-	python -m pytest tests
+	poetry run python3 -m pytest tests
 
 .PHONY: coverage
 coverage:
-	python3 -m pytest --cov-report term-missing --cov=pantos tests
-	rm .coverage
+	poetry run python3 -m pytest --cov-report term-missing --cov=pantos tests
 
 .PHONY: wheel
 wheel: dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION)-py3-none-any.whl
 
-dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION)-py3-none-any.whl: environment-variables pantos/ pantos-client-cli.conf.$(PANTOS_CLIENT_CLI_ENVIRONMENT) pantos-client-library.conf.$(PANTOS_CLIENT_CLI_ENVIRONMENT) setup.py submodules/client-library/pantos/client/library/ submodules/common/pantos/common/
-	cp pantos-client-cli.conf.$(PANTOS_CLIENT_CLI_ENVIRONMENT) pantos/pantos-client-cli.conf
-	cp pantos-client-library.conf.$(PANTOS_CLIENT_CLI_ENVIRONMENT) pantos/pantos-client-library.conf
-	python3 setup.py bdist_wheel
-	rm pantos/pantos-client-cli.conf
-	rm pantos/pantos-client-library.conf
+dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION)-py3-none-any.whl: pantos/ client-cli.yml client-library.yml client-library.publish.env pyproject.toml submodules/client-library/pantos/client/library/ submodules/common/pantos/common/
+	cp client-cli.yml pantos/client-cli.yml
+	cp client-library.yml pantos/client-library.yml
+	cp client-library.publish.env pantos/client-library.env
+	rm pantos/common
+	rm pantos/client/library
+	cp -R submodules/common/pantos/common/ pantos/common
+	cp -R submodules/client-library/pantos/client/library pantos/client/library
+	poetry build -f wheel
+	rm pantos/client-cli.yml
+	rm pantos/client-library.yml
+	rm pantos/client-library.env
+	rm -rf pantos/common
+	rm -rf pantos/client/library
+	ln -sf ../submodules/common/pantos/common pantos/common
+	ln -sf ../../submodules/client-library/pantos/client/library pantos/client/library
+
 
 .PHONY: docker
 docker: dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION).docker
 
-dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION).docker: environment-variables Dockerfile pantos/ pantos-client-cli.conf.$(PANTOS_CLIENT_CLI_ENVIRONMENT) pantos-client-library.conf.$(PANTOS_CLIENT_CLI_ENVIRONMENT) requirements.txt submodules/client-library/pantos/client/library/ submodules/common/pantos/common/
-	docker build -t pantosio/pantos-client --build-arg environment=$(PANTOS_CLIENT_CLI_ENVIRONMENT) .
+dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION).docker: Dockerfile pantos/ client-cli.yml client-library.yml client-library.publish.env submodules/client-library/pantos/client/library/ pyproject.toml submodules/common/pantos/common/
+	docker build -t pantosio/pantos-client .
 	mkdir -p dist
 	docker save pantosio/pantos-client > dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION).docker
 
 .PHONY: install
-install: environment-variables dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION)-py3-none-any.whl
-	python3 -m pip install dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION)-py3-none-any.whl
+install: dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION)-py3-none-any.whl
+	poetry run python3 -m pip install dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION)-py3-none-any.whl
 
 .PHONY: uninstall
 uninstall:
-	python3 -m pip uninstall -y pantos-client-cli
+	poetry run python3 -m pip uninstall -y pantos-client-cli
 
 .PHONY: clean
 clean:
@@ -66,13 +95,4 @@ clean:
 	rm -r -f pantos_client_cli.egg-info/
 ifneq ($(shell docker images -q pantosio/pantos-client 2>/dev/null),)
 	docker rmi -f pantosio/pantos-client
-endif
-
-.PHONY: environment-variables
-environment-variables:
-ifndef PANTOS_CLIENT_CLI_ENVIRONMENT
-	$(error PANTOS_CLIENT_CLI_ENVIRONMENT is undefined)
-endif
-ifndef PANTOS_CLIENT_CLI_VERSION
-	$(error PANTOS_CLIENT_CLI_VERSION is undefined)
 endif
