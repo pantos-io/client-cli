@@ -2,7 +2,7 @@ name: Bug Report
 description: File a bug report
 title: "[Bug]: "
 labels: ["bug", "triage"]
-projects: ["pantos-io/4"]
+projects: ["pantos-io/5"]
 assignees:
   - pantos-io/blockchain-backend
 body:
