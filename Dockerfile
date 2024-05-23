@@ -20,7 +20,7 @@ RUN mkdir -p ./pantos/cli
 COPY pantos/cli ./pantos/cli
 COPY client-cli.yml .
 COPY client-library.yml .
-COPY client-cli.publish.env client-cli.env
-COPY client-library.env client-library.env
+COPY client-cli.env .
+COPY client-library.env .
 
 ENTRYPOINT ["poetry", "run", "python3", "-m", "pantos.cli"]
