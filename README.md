@@ -63,10 +63,10 @@ poetry config virtualenvs.in-project true
 Clone the repository to your local machine:
 
 ```bash
-$ git clone https://github.com/pantos-io/client-library.git
-$ cd client-library
-$ git submodule init
-$ git submodule update --remote
+$ git clone https://github.com/pantos-io/client-cli.git
+$ cd client-cli
+$ virtualenv env
+$ pip install poetry
 ```
 
 #### Libraries
