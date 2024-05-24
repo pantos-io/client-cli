@@ -66,6 +66,7 @@ Clone the repository to your local machine:
 $ git clone https://github.com/pantos-io/client-cli.git
 $ cd client-cli
 $ virtualenv env
+$ source env/bin/activate
 $ pip install poetry
 ```
 
@@ -104,4 +105,4 @@ positional arguments:
 
 ## 4. Contributing
 
-At the moment, contributing to this project is not available. 
+Check the [code of conduct](CODE_OF_CONDUCT.md).
