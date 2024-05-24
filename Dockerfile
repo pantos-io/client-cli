@@ -5,7 +5,8 @@ ARG version=1.1.0
 
 ENV PANTOS_CLIENT_VERSION=${version}
 
-RUN apk update && apk add gcc libc-dev libffi-dev
+RUN apk update && apk add gcc libc-dev libffi-dev \
+  && apk cache clean
 
 WORKDIR /pantos-cli
 
