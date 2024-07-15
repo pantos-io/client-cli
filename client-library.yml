@@ -11,6 +11,7 @@ blockchains:
         fallback_providers:
             - !ENV ${AVALANCHE_FALLBACK_PROVIDER:https://rpc.ankr.com/avalanche_fuji}
         average_block_time: !ENV tag:yaml.org,2002:int ${AVALANCHE_AVERAGE_BLOCK_TIME:3}
+        blocks_per_query: !ENV tag:yaml.org,2002:int ${AVALANCHE_BLOCKS_PER_QUERY:2000}
         chain_id: !ENV tag:yaml.org,2002:int ${AVALANCHE_CHAIN_ID:43113}
         confirmations: !ENV tag:yaml.org,2002:int ${AVALANCHE_CONFIRMATIONS:20}
         hub: !ENV ${AVALANCHE_HUB:0xbafFb84601BeC1FCb4B842f8917E3eA850781BE7}
@@ -32,6 +33,7 @@ blockchains:
         fallback_providers:
             - !ENV ${BNB_FALLBACK_PROVIDER:https://data-seed-prebsc-1-s1.binance.org:8545/}
         average_block_time: !ENV tag:yaml.org,2002:int ${BNB_AVERAGE_BLOCK_TIME:3}
+        blocks_per_query: !ENV tag:yaml.org,2002:int ${BNB_BLOCKS_PER_QUERY:2000}
         chain_id: !ENV tag:yaml.org,2002:int ${BNB_CHAIN_ID:97}
         confirmations: !ENV tag:yaml.org,2002:int ${BNB_CONFIRMATIONS:3}
         hub: !ENV ${BNB_HUB:0xFB37499DC5401Dc39a0734df1fC7924d769721d5}
@@ -53,6 +55,7 @@ blockchains:
         fallback_providers:
             - !ENV ${CELO_FALLBACK_PROVIDER:https://alfajores-forno.celo-testnet.org}
         average_block_time: !ENV tag:yaml.org,2002:int ${CELO_AVERAGE_BLOCK_TIME:5}
+        blocks_per_query: !ENV tag:yaml.org,2002:int ${CELO_BLOCKS_PER_QUERY:2000}
         chain_id: !ENV tag:yaml.org,2002:int ${CELO_CHAIN_ID:44787}
         confirmations: !ENV tag:yaml.org,2002:int ${CELO_CONFIRMATIONS:3}
         hub: !ENV ${CELO_HUB:0x8389B9A7608dbf52a699b998f309883257923C0E}
@@ -74,6 +77,7 @@ blockchains:
         fallback_providers:
             - !ENV ${CRONOS_FALLBACK_PROVIDER:https://evm-t3.cronos.org}
         average_block_time: !ENV tag:yaml.org,2002:int ${CRONOS_AVERAGE_BLOCK_TIME:5}
+        blocks_per_query: !ENV tag:yaml.org,2002:int ${CRONOS_BLOCKS_PER_QUERY:2000}
         chain_id: !ENV tag:yaml.org,2002:int ${CRONOS_CHAIN_ID:338}
         confirmations: !ENV tag:yaml.org,2002:int ${CRONOS_CONFIRMATIONS:3}
         hub: !ENV ${CRONOS_HUB:0x0Cfb3c7C11A33BEf124A9D86073e73932b9AbF90}
@@ -95,6 +99,7 @@ blockchains:
         fallback_providers:
             - !ENV ${ETHEREUM_FALLBACK_PROVIDER:https://ethereum-holesky.publicnode.com}
         average_block_time: !ENV tag:yaml.org,2002:int ${ETHEREUM_AVERAGE_BLOCK_TIME:14}
+        blocks_per_query: !ENV tag:yaml.org,2002:int ${ETHEREUM_BLOCKS_PER_QUERY:2000}
         chain_id: !ENV tag:yaml.org,2002:int ${ETHEREUM_CHAIN_ID:17000}
         confirmations: !ENV tag:yaml.org,2002:int ${ETHEREUM_CONFIRMATIONS:20}
         hub: !ENV ${ETHEREUM_HUB:0x5e447968d4a177fE7bFB8877cA12aE20Bd60dD85}
@@ -116,20 +121,21 @@ blockchains:
         fallback_providers:
             - !ENV ${FANTOM_FALLBACK_PROVIDER:https://rpc.ankr.com/fantom_testnet}
         average_block_time: !ENV tag:yaml.org,2002:int ${FANTOM_AVERAGE_BLOCK_TIME:1}
+        blocks_per_query: !ENV tag:yaml.org,2002:int ${FANTOM_BLOCKS_PER_QUERY:2000}
         chain_id: !ENV tag:yaml.org,2002:int ${FANTOM_CHAIN_ID:4002}
         confirmations: !ENV tag:yaml.org,2002:int ${FANTOM_CONFIRMATIONS:3}
         hub: !ENV ${FANTOM_HUB:0x4BC6A71D4C3D6170d0Db849fE19b8DbA18f1a7F5}
         forwarder: !ENV ${FANTOM_FORWARDER:0xbBbebAB1c109De08599ae17e2977cD7D91eA2D3b}
         tokens:
-            best: !ENV ${FANTOM_TOKEN_BEST:0x9b304A0B21C6B830298b2412e51Bc5Ba17e8b796}
-            pan: !ENV ${FANTOM_TOKEN_PAN:0x7EFfCc0a130E452c2FB78bFEDBd02a33E03FD50d}
-            panavax: !ENV ${FANTOM_TOKEN_PANAVAX:0xCD6dF7dBba253d2e14cb7DD8E1b2662CDb40C69F}
-            panbnb: !ENV ${FANTOM_TOKEN_PANBNB:0x997DFc659ABBd30F3514Bde874E663bC82B0e701}
-            pancelo: !ENV ${FANTOM_TOKEN_PANCELO:0xEAe1274dBdD006b5eA3197729BF5f11B8fbb427E}
-            pancro: !ENV ${FANTOM_TOKEN_PANCRO:0x30ce06f12960C46aC64542813e45E03164f412fD}
-            paneth: !ENV ${FANTOM_TOKEN_PANETH:0x5e447968d4a177fE7bFB8877cA12aE20Bd60dD85}
-            panftm: !ENV ${FANTOM_TOKEN_PANFTM:0x5538e600dc919f72858dd4D4F5E4327ec6f2af60}
-            panmatic: !ENV ${FANTOM_TOKEN_PANMATIC:0xFd9a7A3fDA872eA8E948b3b41f2dcb6CB40ed277}
+            best: !ENV ${FANTOM_TOKEN_BEST:0x5e447968d4a177fE7bFB8877cA12aE20Bd60dD85}
+            pan: !ENV ${FANTOM_TOKEN_PAN:0x5538e600dc919f72858dd4D4F5E4327ec6f2af60}
+            panavax: !ENV ${FANTOM_TOKEN_PANAVAX:0xFd9a7A3fDA872eA8E948b3b41f2dcb6CB40ed277}
+            panbnb: !ENV ${FANTOM_TOKEN_PANBNB:0x7EFfCc0a130E452c2FB78bFEDBd02a33E03FD50d}
+            pancelo: !ENV ${FANTOM_TOKEN_PANCELO:0x9b304A0B21C6B830298b2412e51Bc5Ba17e8b796}
+            pancro: !ENV ${FANTOM_TOKEN_PANCRO:0xCD6dF7dBba253d2e14cb7DD8E1b2662CDb40C69F}
+            paneth: !ENV ${FANTOM_TOKEN_PANETH:0x997DFc659ABBd30F3514Bde874E663bC82B0e701}
+            panftm: !ENV ${FANTOM_TOKEN_PANFTM:0xEAe1274dBdD006b5eA3197729BF5f11B8fbb427E}
+            panmatic: !ENV ${FANTOM_TOKEN_PANMATIC:0x30ce06f12960C46aC64542813e45E03164f412fD}
             pansol: !ENV ${FANTOM_TOKEN_PANSOL}
     polygon:
         active: !ENV tag:yaml.org,2002:bool ${POLYGON_ACTIVE:false}
@@ -137,6 +143,7 @@ blockchains:
         fallback_providers:
             - !ENV ${POLYGON_FALLBACK_PROVIDER:https://rpc.ankr.com/polygon_mumbai}
         average_block_time: !ENV tag:yaml.org,2002:int ${POLYGON_AVERAGE_BLOCK_TIME:3}
+        blocks_per_query: !ENV tag:yaml.org,2002:int ${POLYGON_BLOCKS_PER_QUERY:2000}
         chain_id: !ENV tag:yaml.org,2002:int ${POLYGON_CHAIN_ID:80001}
         confirmations: !ENV tag:yaml.org,2002:int ${POLYGON_CONFIRMATIONS:20}
         hub: !ENV ${POLYGON_HUB:0x5C4B92cd0A956dedc14AF31fD474931540D8277B}
@@ -158,6 +165,7 @@ blockchains:
         fallback_providers:
             - !ENV ${SOLANA_FALLBACK_PROVIDER}
         average_block_time: !ENV tag:yaml.org,2002:int ${SOLANA_AVERAGE_BLOCK_TIME:1}
+        blocks_per_query: !ENV tag:yaml.org,2002:int ${SOLANA_BLOCKS_PER_QUERY:2000}
         chain_id: !ENV tag:yaml.org,2002:int ${SOLANA_CHAIN_ID:-1}
         confirmations: !ENV tag:yaml.org,2002:int ${SOLANA_CONFIRMATIONS:1}
         hub: !ENV ${SOLANA_HUB}
