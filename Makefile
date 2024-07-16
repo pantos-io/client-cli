@@ -1,6 +1,20 @@
 PANTOS_CLIENT_CLI_VERSION := $(shell poetry version -s)
 PYTHON_FILES := pantos/cli tests
 
+.PHONY: check-version
+check-version:
+	@if [ -z "$(VERSION)" ]; then \
+		echo "Error: VERSION is not set"; \
+		exit 1; \
+	fi
+	@VERSION_FROM_POETRY=$$(poetry version -s) ; \
+	if test "$$VERSION_FROM_POETRY" != "$(VERSION)"; then \
+		echo "Version mismatch: expected $(VERSION), got $$VERSION_FROM_POETRY" ; \
+		exit 1 ; \
+	else \
+		echo "Version check passed" ; \
+	fi
+
 .PHONY: dist
 dist: wheel docker
 
