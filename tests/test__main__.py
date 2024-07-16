@@ -1,14 +1,17 @@
 import argparse
 import decimal
+import itertools
 import pathlib
 import unittest
 import unittest.mock
-import uuid
 
 import pytest
 from pantos.client.library import api
+from pantos.client.library.api import DestinationTransferStatus
+from pantos.client.library.api import ServiceNodeTaskInfo
 from pantos.client.library.constants import TOKEN_SYMBOL_PAN
 from pantos.common.blockchains.enums import Blockchain
+from pantos.common.entities import ServiceNodeTransferStatus
 from pantos.common.types import BlockchainAddress
 
 from pantos.cli.__main__ import _load_private_key
@@ -230,18 +233,16 @@ def test_bids_no_bids_available(mock_retrieve_service_node_bids,
 @unittest.mock.patch('pantos.cli.configuration.config')
 @unittest.mock.patch('pantos.client.library.api.transfer_tokens')
 def test_transfer(mock_transfer_tokens, mock_cli_config, mock_lib_config,
-                  capsys):
+                  service_node, task_uuid, capsys):
     mock_cli_config.__getitem__.side_effect = MOCK_CLI_CONFIG_DICT.__getitem__
     mock_lib_config.__getitem__.side_effect = MOCK_LIB_CONFIG_DICT.__getitem__
-    mock_transfer_tokens.return_value = uuid.UUID(
-        '03ae67f4-ddf7-49d1-9355-99f8d3c256fb')
+    mock_transfer_tokens.return_value = ServiceNodeTaskInfo(
+        task_uuid, service_node)
 
     cmd = (f'pantos.cli transfer -k {TEST_KEYSTORE} ethereum bnb_chain '
            "0x2003c848eB0201AA261892081fBC9E4FC559c494 pan .6 --yes")
-    expected = (
-        '\nThe service node accepted the transfer request and returned\n'
-        'the following task ID: '
-        '03ae67f4-ddf7-49d1-9355-99f8d3c256fb\n')
+    expected = (f'\nThe service node {service_node}\naccepted the transfer'
+                f' request and returned\nthe following task ID: {task_uuid}\n')
 
     with unittest.mock.patch('sys.argv', cmd.split(' ')):
         main()
@@ -264,10 +265,7 @@ def test_load_private_key_no_private_key_no_config(mock_get_blockchain_config):
 
 @unittest.mock.patch('pantos.client.library.configuration.config')
 @unittest.mock.patch('pantos.cli.configuration.config')
-def test_load_private_key_no_private_key(
-    mock_cli_config,
-    mock_lib_config,
-):
+def test_load_private_key_no_private_key(mock_cli_config, mock_lib_config):
     mock_cli_config.__getitem__.side_effect = MOCK_CLI_CONFIG_DICT.__getitem__
     mock_lib_config.__getitem__.side_effect = MOCK_LIB_CONFIG_DICT.__getitem__
     with pytest.raises(ClientCliError):
@@ -300,6 +298,70 @@ def test_string_int_pair_value_error():
 def test_string_int_pair_correct_cast():
     argument = "1"
     assert _string_int_pair(argument) == int(argument)
+
+
+@pytest.mark.parametrize('token_transfer_status', [
+    list(tuple_) for tuple_ in itertools.product(
+        Blockchain, ServiceNodeTransferStatus, DestinationTransferStatus)
+], indirect=True)
+@unittest.mock.patch('pantos.client.library.configuration.config')
+@unittest.mock.patch('pantos.cli.configuration.config')
+@unittest.mock.patch('pantos.client.library.api.get_token_transfer_status')
+def test_print_status(mock_get_token_transfer_status, mock_cli_config,
+                      mock_lib_config, token_transfer_status, service_node,
+                      task_uuid, capsys):
+    mock_cli_config.__getitem__.side_effect = MOCK_CLI_CONFIG_DICT.__getitem__
+    mock_lib_config.__getitem__.side_effect = MOCK_LIB_CONFIG_DICT.__getitem__
+
+    cmd = f'pantos.cli status ethereum {service_node} {task_uuid}'
+    mock_get_token_transfer_status.return_value = token_transfer_status
+
+    with unittest.mock.patch('sys.argv', cmd.split(' ')):
+        main()
+    captured = capsys.readouterr()
+
+    _test_status_output(service_node, task_uuid, token_transfer_status,
+                        captured.out)
+
+
+def _test_status_output(service_node_address, service_node_task_uuid,
+                        transfer_status, captured_output):
+    expected_output = (
+        'Transfer status:\n\n'
+        f'Service node address:\t\t{service_node_address}\n'  # noqa E231
+        f'Service node task ID:\t\t{service_node_task_uuid}\n\n'  # noqa E231
+        f'Sender address:\t\t\t{transfer_status.sender_address}\n'  # noqa E231
+        f'Recipient address:\t\t{transfer_status.recipient_address}\n'  # noqa E231
+        f'Token amount:\t\t\t{transfer_status.amount}\n'  # noqa E231
+        f'Source token address:\t\t{transfer_status.source_token_address}\n'  # noqa E231
+        'Destination token address:\t'  # noqa E231
+        f'{transfer_status.destination_token_address}\n\n'
+        f'Source blockchain:\t\tETHEREUM\n'  # noqa E231
+        'Source transfer status:\t\t'  # noqa E231
+        f'{transfer_status.source_transfer_status.name}')
+    if (transfer_status.source_transfer_status
+            is ServiceNodeTransferStatus.CONFIRMED):
+        expected_output += (
+            f'\nSource transfer ID:\t\t{transfer_status.source_transfer_id}\n'  # noqa E231
+            'Source transaction ID:\t\t'  # noqa E231
+            f'{transfer_status.source_transaction_id}')
+    expected_output += (
+        '\n\nDestination blockchain:\t\t'  # noqa E231
+        f'{transfer_status.destination_blockchain.name}\n'
+        'Destination transfer status:\t'  # noqa E231
+        f'{transfer_status.destination_transfer_status.name}\n')
+    if (transfer_status.destination_transfer_status
+            is not api.DestinationTransferStatus.UNKNOWN):
+        expected_output += (
+            f'Destination transfer ID:\t'  # noqa E231
+            f'{transfer_status.destination_transfer_id}\n'
+            'Destination transaction ID:\t'  # noqa E231
+            f'{transfer_status.destination_transaction_id}\n'
+            f'Validator nonce:\t\t{transfer_status.validator_nonce}\n'  # noqa E231
+            f'Signer addresses:\t\t{transfer_status.signer_addresses}\n'  # noqa E231
+            f'Signatures:\t\t\t{transfer_status.signatures}\n')  # noqa E231
+
+    assert captured_output == expected_output
 
 
 if __name__ == '__main__':

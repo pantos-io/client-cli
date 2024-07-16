@@ -71,6 +71,32 @@ install: dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION)-py3-none-any.whl
 uninstall:
 	poetry run python3 -m pip uninstall -y pantos-client-cli
 
+.PHONY: local-common
+local-common:
+ifndef DEV_PANTOS_COMMON
+	$(error Please define DEV_PANTOS_COMMON variable)
+endif
+	$(eval CURRENT_COMMON := $(shell echo .venv/lib/python3.*/site-packages/pantos/common))
+	@if [ -d "$(CURRENT_COMMON)" ]; then \
+		rm -rf "$(CURRENT_COMMON)"; \
+		ln -s "$(DEV_PANTOS_COMMON)" "$(CURRENT_COMMON)"; \
+	else \
+		echo "Directory $(CURRENT_COMMON) does not exist"; \
+	fi
+
+.PHONY: local-client-library
+local-client-library:
+ifndef DEV_PANTOS_CLIENT_LIBRARY
+	$(error Please define DEV_PANTOS_CLIENT_LIBRARY variable)
+endif
+	$(eval CURRENT_CLIENT_LIBRARY := $(shell echo .venv/lib/python3.*/site-packages/pantos/client))
+	@if [ -d "$(CURRENT_CLIENT_LIBRARY)" ]; then \
+		rm -rf "$(CURRENT_CLIENT_LIBRARY)"; \
+		ln -s "$(DEV_PANTOS_CLIENT_LIBRARY)" "$(CURRENT_CLIENT_LIBRARY)"; \
+	else \
+		echo "Directory $(CURRENT_CLIENT_LIBRARY) does not exist"; \
+	fi
+
 .PHONY: clean
 clean:
 	rm -r -f build/

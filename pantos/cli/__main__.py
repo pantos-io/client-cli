@@ -10,6 +10,7 @@ import typing
 import uuid
 
 from pantos.client.library import api
+from pantos.common.servicenodes import ServiceNodeTransferStatus
 
 from pantos.cli.application import initialize_application
 from pantos.cli.configuration import config
@@ -28,6 +29,8 @@ def main() -> None:
             _execute_command_bids(arguments)
         elif arguments.command == 'transfer':
             _execute_command_transfer(arguments)
+        elif arguments.command == 'status':
+            _execute_command_status(arguments)
         else:
             raise NotImplementedError
     except Exception as error:
@@ -106,6 +109,22 @@ def _create_argument_parser() -> argparse.ArgumentParser:
     parser_transfer.add_argument(
         '-y', '--yes', action='store_true',
         help='transfer the tokens immediately without prior confirmation')
+    # Argument parser for status
+    parser_status = subparsers.add_parser('status',
+                                          help='show the status of a transfer')
+    parser_status.add_argument('source', choices=active_blockchain_names,
+                               help='the source blockchain of the transfer')
+    parser_status.add_argument(
+        'service', type=api.BlockchainAddress,
+        help='the service node which processed the transfer')
+    parser_status.add_argument(
+        'task', type=uuid.UUID,
+        help='task ID of the transfer to show the status for')
+    parser_status.add_argument(
+        '-b', '--blocks', type=int,
+        help='The number of blocks to query for the transfer on the '
+        'destination blockchain. If not specified, the query will '
+        'include all blocks from the latest to the genesis block.')
     return parser
 
 
@@ -160,12 +179,24 @@ def _execute_command_transfer(arguments: argparse.Namespace) -> None:
             return
     sender_private_key = _load_private_key(source_blockchain,
                                            arguments.keystore)
-    task_id = api.transfer_tokens(
+    service_node_task_info = api.transfer_tokens(
         source_blockchain, destination_blockchain, sender_private_key,
         arguments.recipient, arguments.token, arguments.amount,
         None if arguments.service is None else
         (arguments.service[0], arguments.service[1]))
-    _print_transfer_output(task_id)
+    _print_transfer_output(service_node_task_info)
+
+
+def _execute_command_status(arguments: argparse.Namespace) -> None:
+    source_blockchain = api.Blockchain.from_name(arguments.source)
+    service_node_address = arguments.service
+    task_id = arguments.task
+    blocks = arguments.blocks
+    transfer_status = api.get_token_transfer_status(source_blockchain,
+                                                    service_node_address,
+                                                    task_id, blocks)
+    _print_status(source_blockchain, service_node_address, task_id,
+                  transfer_status)
 
 
 def _load_private_key(
@@ -228,11 +259,10 @@ def _print_transfer_inputs(source_blockchain: api.Blockchain,
                            bid_id: typing.Optional[int] = None) -> None:
     print('New Pantos transfer:\n')
     print(f'Source blockchain:\t{source_blockchain.name}')  # noqa E231
-    print(
-        f'Destination blockchain:\t{destination_blockchain.name}')  # noqa E231
-    print(
-        f'Recipient ({destination_blockchain.name}):\t{recipient_address}'  # noqa E231
-    )
+    print(f'Destination blockchain:'  # noqa E231
+          f'\t{destination_blockchain.name}')
+    print(f'Recipient ({destination_blockchain.name}):'  # noqa E231
+          f'\t{recipient_address}')
     print(f'Token symbol:\t\t{token_symbol.upper()}')  # noqa E231
     print(f'Amount:\t\t\t{amount}')  # noqa E231
     print(f'Keystore ({source_blockchain.name}):\t'  # noqa E231
@@ -245,9 +275,56 @@ def _print_transfer_inputs(source_blockchain: api.Blockchain,
                                            None else bid_id))
 
 
-def _print_transfer_output(task_id: uuid.UUID) -> None:
-    print('\nThe service node accepted the transfer request and returned\n'
-          f'the following task ID: {task_id}')
+def _print_transfer_output(
+        service_node_task_info: api.ServiceNodeTaskInfo) -> None:
+    print(f'\nThe service node {service_node_task_info.service_node_address}\n'
+          'accepted the transfer request and returned\n'
+          f'the following task ID: {service_node_task_info.task_id}')
+
+
+def _print_status(source_blockchain: api.Blockchain,
+                  service_node_address: api.BlockchainAddress,
+                  task_id: uuid.UUID,
+                  transfer_status: api.TokenTransferStatus) -> None:
+    print('Transfer status:\n')
+    print(f'Service node address:\t\t{service_node_address}')  # noqa E231
+    print(f'Service node task ID:\t\t{task_id}\n')  # noqa E231
+    print(f'Sender address:\t\t\t'  # noqa E231
+          f'{transfer_status.sender_address}')
+    print(f'Recipient address:\t\t'  # noqa E231
+          f'{transfer_status.recipient_address}')
+    print(f'Token amount:\t\t\t{transfer_status.amount}')  # noqa E231
+    print(f'Source token address:\t\t'  # noqa E231
+          f'{transfer_status.source_token_address}')
+    print(f'Destination token address:\t'  # noqa E231
+          f'{transfer_status.destination_token_address}\n')
+
+    print(f'Source blockchain:\t\t{source_blockchain.name}')  # noqa E231
+    print(f'Source transfer status:\t\t'  # noqa E231
+          f'{transfer_status.source_transfer_status.name}')  # noqa E231
+    if (transfer_status.source_transfer_status
+            is ServiceNodeTransferStatus.CONFIRMED):
+        print(f'Source transfer ID:\t\t'  # noqa E231
+              f'{transfer_status.source_transfer_id}')
+        print(f'Source transaction ID:\t\t'  # noqa E231
+              f'{transfer_status.source_transaction_id}')
+    print('')
+
+    print(f'Destination blockchain:\t\t'  # noqa E231
+          f'{transfer_status.destination_blockchain.name}')  # noqa E231
+    print(f'Destination transfer status:\t'  # noqa E231
+          f'{transfer_status.destination_transfer_status.name}')  # noqa E231
+    if (transfer_status.destination_transfer_status
+            is not api.DestinationTransferStatus.UNKNOWN):
+        print(f'Destination transfer ID:\t'  # noqa E231
+              f'{transfer_status.destination_transfer_id}')
+        print(f'Destination transaction ID:\t'  # noqa E231
+              f'{transfer_status.destination_transaction_id}')
+        print(f'Validator nonce:\t\t'  # noqa E231
+              f'{transfer_status.validator_nonce}')
+        print(f'Signer addresses:\t\t'  # noqa E231
+              f'{transfer_status.signer_addresses}')
+        print(f'Signatures:\t\t\t{transfer_status.signatures}')  # noqa E231
 
 
 if __name__ == '__main__':

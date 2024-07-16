@@ -32,13 +32,12 @@ pre-commit = "3.3.3"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pantos-common = "1.4.1"
-pantos-client-library = "1.1.2"
+pantos-common = "2.1.2"
+pantos-client-library = "1.1.3"
 Cerberus = "1.3.4"
 PyYAML = "6.0.1"
-requests = "2.32.0"
+requests = "2.32.3"
 web3 = "6.5.0"
-typing-extensions = "4.11.0"
 pyaml-env = "1.2.1"
 python-dotenv = "1.0.1"
 
