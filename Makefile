@@ -70,12 +70,8 @@ wheel:
 	poetry build
 
 .PHONY: docker
-docker: dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION).docker
-
-dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION).docker: Dockerfile pantos/ client-cli.yml client-library.yml client-library.publish.env submodules/client-library/pantos/client/library/ pyproject.toml submodules/common/pantos/common/
+docker:
 	docker build -t pantosio/pantos-client .
-	mkdir -p dist
-	docker save pantosio/pantos-client > dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION).docker
 
 .PHONY: install
 install: dist/pantos_client_cli-$(PANTOS_CLIENT_CLI_VERSION)-py3-none-any.whl

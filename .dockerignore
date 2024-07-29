@@ -13,3 +13,5 @@ find.sh
 local/
 .pytest_cache
 .mypy_cache
+Dockerfile
+*.
