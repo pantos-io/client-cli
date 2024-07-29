@@ -19,4 +19,8 @@ COPY --from=build /pantos-cli/dist/*.whl .
 
 RUN python3 -m pip install *.whl
 
+RUN pip cache purge && rm -rf ~/.cache/pip
+
+RUN rm *.whl
+
 ENTRYPOINT ["pantos-cli"]
