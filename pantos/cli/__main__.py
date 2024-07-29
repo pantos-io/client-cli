@@ -4,7 +4,9 @@
 import argparse
 import decimal
 import getpass
+import importlib.resources
 import pathlib
+import shutil
 import sys
 import typing
 import uuid
@@ -31,6 +33,8 @@ def main() -> None:
             _execute_command_transfer(arguments)
         elif arguments.command == 'status':
             _execute_command_status(arguments)
+        elif arguments.command == 'create-config':
+            _execute_command_create_config(arguments)
         else:
             raise NotImplementedError
     except Exception as error:
@@ -125,6 +129,12 @@ def _create_argument_parser() -> argparse.ArgumentParser:
         help='The number of blocks to query for the transfer on the '
         'destination blockchain. If not specified, the query will '
         'include all blocks from the latest to the genesis block.')
+    parser_config = subparsers.add_parser('create-config',
+                                          help='Create a new empty env file')
+    parser_config.add_argument(
+        '-p', '--path', type=pathlib.Path, default=None,
+        help='Path where to create the env file, defaults to the '
+        'current working directory')
     return parser
 
 
@@ -197,6 +207,22 @@ def _execute_command_status(arguments: argparse.Namespace) -> None:
                                                     task_id, blocks)
     _print_status(source_blockchain, service_node_address, task_id,
                   transfer_status)
+
+
+def _execute_command_create_config(arguments: argparse.Namespace) -> None:
+    path = arguments.path
+    if path is None:
+        path = pathlib.Path.cwd()
+
+    path.mkdir(parents=True, exist_ok=True)
+
+    # List and copy all .env files from the pantos resource directory
+    resource_path = importlib.resources.files('pantos')
+    for env_file in resource_path.iterdir():
+        env_file_path = pathlib.Path(env_file.name)
+        if env_file_path.suffix == '.env':
+            shutil.copy(env_file_path, path / env_file_path.name)
+    print(f'Created .env files in {path}')
 
 
 def _load_private_key(

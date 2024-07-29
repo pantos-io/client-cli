@@ -113,6 +113,61 @@ def test_balance(mock_retrieve_token_balance, mock_cli_config, mock_lib_config,
     assert captured.out == expected
 
 
+@unittest.mock.patch('shutil.copy')
+@unittest.mock.patch('pathlib.Path.mkdir')
+@unittest.mock.patch('pantos.client.library.configuration.config')
+@unittest.mock.patch('pantos.cli.configuration.config')
+def test_config_create(mock_cli_config, mock_lib_config, mock_mkdir,
+                       mock_shutil_copy: unittest.mock.MagicMock, capsys):
+    mock_cli_config.__getitem__.side_effect = MOCK_CLI_CONFIG_DICT.__getitem__
+    mock_lib_config.__getitem__.side_effect = MOCK_LIB_CONFIG_DICT.__getitem__
+
+    cmd = 'pantos.cli create-config'
+
+    with unittest.mock.patch('sys.argv', cmd.split(' ')):
+        main()
+
+    mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
+
+    mock_shutil_copy.assert_has_calls([
+        unittest.mock.call(pathlib.Path('client-cli.env'),
+                           pathlib.Path.cwd() / 'client-cli.env'),
+        unittest.mock.call(pathlib.Path('client-library.env'),
+                           pathlib.Path.cwd() / 'client-library.env')
+    ], any_order=True)  # required because 3.12 changed the order
+
+    captured = capsys.readouterr()
+    assert captured.out == f'Created .env files in {pathlib.Path.cwd()}\n'
+
+
+@unittest.mock.patch('shutil.copy')
+@unittest.mock.patch('pathlib.Path.mkdir')
+@unittest.mock.patch('pantos.client.library.configuration.config')
+@unittest.mock.patch('pantos.cli.configuration.config')
+def test_config_create_custom_dir(mock_cli_config, mock_lib_config, mock_mkdir,
+                                  mock_shutil_copy: unittest.mock.MagicMock,
+                                  capsys):
+    mock_cli_config.__getitem__.side_effect = MOCK_CLI_CONFIG_DICT.__getitem__
+    mock_lib_config.__getitem__.side_effect = MOCK_LIB_CONFIG_DICT.__getitem__
+
+    cmd = 'pantos.cli create-config -p /foo'
+
+    with unittest.mock.patch('sys.argv', cmd.split(' ')):
+        main()
+
+    mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
+
+    mock_shutil_copy.assert_has_calls([
+        unittest.mock.call(pathlib.Path('client-cli.env'),
+                           pathlib.Path('/foo/client-cli.env')),
+        unittest.mock.call(pathlib.Path('client-library.env'),
+                           pathlib.Path('/foo/client-library.env'))
+    ], any_order=True)  # required because 3.12 changed the order
+
+    captured = capsys.readouterr()
+    assert captured.out == 'Created .env files in /foo\n'
+
+
 @unittest.mock.patch('pantos.client.library.configuration.config')
 @unittest.mock.patch('pantos.cli.configuration.config')
 def test_not_implemented(mock_cli_config, mock_lib_config, capsys):

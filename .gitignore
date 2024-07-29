@@ -11,3 +11,4 @@ build/
 dist/
 find.sh
 local/
+.mypy_cache
