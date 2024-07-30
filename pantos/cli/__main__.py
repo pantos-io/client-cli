@@ -264,8 +264,8 @@ def _print_bids(
     print('Pantos service node bids for token transfers from the\n'
           f'source blockchain {source_blockchain.name} to the destination '
           f'blockchain {destination_blockchain.name}:\n')  # noqa E231
-    print('Service node\t\t\t\t\tBid ID\tTime\tFee')
-    print('\t\t\t\t\t\t\t(s)\t(PAN)')
+    print('Service node\t\t\t\t\tTime\tFee')
+    print('\t\t\t\t\t\t(s)\t(PAN)')
     print('==================================='
           '==================================')
     for service_node_address, bids in service_node_bids.items():
