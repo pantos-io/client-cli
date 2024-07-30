@@ -8,6 +8,12 @@ readme = "README.md"
 packages = [
     { include = "pantos"}
 ]
+include = [
+    "pantos/client-library.yml",
+    "pantos/client-library.env",
+    "pantos/client-cli.yml",
+    "pantos/client-cli.env",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -44,3 +50,6 @@ python-dotenv = "1.0.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+pantos-cli = "pantos.cli.__main__:main"

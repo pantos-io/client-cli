@@ -1,27 +1,26 @@
-FROM python:3.12-alpine
-
-ARG environment=testnet
-ARG version=1.1.0
-
-ENV PANTOS_CLIENT_VERSION=${version}
+FROM python:3.12-alpine AS build
 
 RUN apk update && apk add gcc libc-dev libffi-dev \
   && apk cache clean
 
-WORKDIR /pantos-cli
-
-COPY pyproject.toml poetry.lock ./
-
 RUN python3 -m pip install poetry
 
-RUN poetry install --only main --no-interaction --no-cache --no-root
+WORKDIR /pantos-cli
 
-RUN mkdir -p ./pantos/cli
+COPY . .
 
-COPY pantos/cli ./pantos/cli
-COPY client-cli.yml .
-COPY client-library.yml .
-COPY client-cli.env .
-COPY client-library.env .
+RUN poetry build
 
-ENTRYPOINT ["poetry", "run", "python3", "-m", "pantos.cli"]
+FROM python:3.12-alpine AS production
+
+WORKDIR /pantos-cli
+
+COPY --from=build /pantos-cli/dist/*.whl .
+
+RUN python3 -m pip install *.whl
+
+RUN pip cache purge && rm -rf ~/.cache/pip
+
+RUN rm *.whl
+
+ENTRYPOINT ["pantos-cli"]
