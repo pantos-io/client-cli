@@ -238,8 +238,8 @@ def test_bids(mock_retrieve_service_node_bids, mock_cli_config,
         'Pantos service node bids for token transfers from the\n'
         'source blockchain BNB_CHAIN to the destination blockchain ETHEREUM:\n'
         '\n'
-        'Service node\t\t\t\t\tBid ID\tTime\tFee\n'
-        '\t\t\t\t\t\t\t(s)\t(PAN)\n'
+        'Service node\t\t\t\t\tTime\tFee\n'
+        '\t\t\t\t\t\t(s)\t(PAN)\n'
         '===================================================================='
         '=\n0x9C20a03E230e9733561E4bab598409bB6d5AED12\t600\t2\n'
         '0x9C20a03E230e9733561E4bab598409bB6d5AED12\t1200\t1.5\n')
@@ -269,8 +269,8 @@ def test_bids_no_bids_available(mock_retrieve_service_node_bids,
         'Pantos service node bids for token transfers from the\n'
         'source blockchain BNB_CHAIN to the destination blockchain ETHEREUM:\n'
         '\n'
-        'Service node\t\t\t\t\tBid ID\tTime\tFee\n'
-        '\t\t\t\t\t\t\t(s)\t(PAN)\n'
+        'Service node\t\t\t\t\tTime\tFee\n'
+        '\t\t\t\t\t\t(s)\t(PAN)\n'
         '===================================================================='
         '=\n')
 
