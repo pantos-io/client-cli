@@ -28,27 +28,27 @@ blockchains:
             panmatic: !ENV ${AVALANCHE_TOKEN_PANMATIC:0xFd9a7A3fDA872eA8E948b3b41f2dcb6CB40ed277}
             pansol: !ENV ${AVALANCHE_TOKEN_PANSOL}
     bnb_chain:
-        active: !ENV tag:yaml.org,2002:bool ${BNB_ACTIVE:true}
-        provider: !ENV ${BNB_PROVIDER:https://data-seed-prebsc-1-s1.binance.org:8545/}
+        active: !ENV tag:yaml.org,2002:bool ${BNB_CHAIN_ACTIVE:true}
+        provider: !ENV ${BNB_CHAIN_PROVIDER:https://data-seed-prebsc-1-s1.binance.org:8545/}
         fallback_providers:
-            - !ENV ${BNB_FALLBACK_PROVIDER:https://data-seed-prebsc-1-s1.binance.org:8545/}
-        average_block_time: !ENV tag:yaml.org,2002:int ${BNB_AVERAGE_BLOCK_TIME:3}
-        blocks_per_query: !ENV tag:yaml.org,2002:int ${BNB_BLOCKS_PER_QUERY:2000}
-        chain_id: !ENV tag:yaml.org,2002:int ${BNB_CHAIN_ID:97}
-        confirmations: !ENV tag:yaml.org,2002:int ${BNB_CONFIRMATIONS:3}
-        hub: !ENV ${BNB_HUB:0xFB37499DC5401Dc39a0734df1fC7924d769721d5}
-        forwarder: !ENV ${BNB_FORWARDER:0x8d1A4C7bc5f327f30895150c4596E3db6Eb48562}
+            - !ENV ${BNB_CHAIN_FALLBACK_PROVIDER:https://data-seed-prebsc-1-s1.binance.org:8545/}
+        average_block_time: !ENV tag:yaml.org,2002:int ${BNB_CHAIN_AVERAGE_BLOCK_TIME:3}
+        blocks_per_query: !ENV tag:yaml.org,2002:int ${BNB_CHAIN_BLOCKS_PER_QUERY:2000}
+        chain_id: !ENV tag:yaml.org,2002:int ${BNB_CHAIN_CHAIN_ID:97}
+        confirmations: !ENV tag:yaml.org,2002:int ${BNB_CHAIN_CONFIRMATIONS:3}
+        hub: !ENV ${BNB_CHAIN_HUB:0xFB37499DC5401Dc39a0734df1fC7924d769721d5}
+        forwarder: !ENV ${BNB_CHAIN_FORWARDER:0x8d1A4C7bc5f327f30895150c4596E3db6Eb48562}
         tokens:
-            best: !ENV ${BNB_TOKEN_BEST:0xA52D00fAad14B4643aE7011a7DDd02bDD9C6C99e}
-            pan: !ENV ${BNB_TOKEN_PAN:0xC892F1D09a7BEF98d65e7f9bD4642d36BC506441}
-            panavax: !ENV ${BNB_TOKEN_PANAVAX:0x6A7ABeea69f01A225104Cc6AD44B88D15056a3fA}
-            panbnb: !ENV ${BNB_TOKEN_PANBNB:0x5538e600dc919f72858dd4D4F5E4327ec6f2af60}
-            pancelo: !ENV ${BNB_TOKEN_PANCELO:0xa562C9Ef83dcfF9ee6bB90FcC7b0DbEFC8C0e8f4}
-            pancro: !ENV ${BNB_TOKEN_PANCRO:0xC92D9f4169fCD5FcA1A15A177b98f43F0Eb90e3f}
-            paneth: !ENV ${BNB_TOKEN_PANETH:0x5e447968d4a177fE7bFB8877cA12aE20Bd60dD85}
-            panftm: !ENV ${BNB_TOKEN_PANFTM:0xFA5f89e332f4961574F78514a7e369FdD71f1E10}
-            panmatic: !ENV ${BNB_TOKEN_PANMATIC:0xFd9a7A3fDA872eA8E948b3b41f2dcb6CB40ed277}
-            pansol: !ENV ${BNB_TOKEN_PANSOL}
+            best: !ENV ${BNB_CHAIN_TOKEN_BEST:0xA52D00fAad14B4643aE7011a7DDd02bDD9C6C99e}
+            pan: !ENV ${BNB_CHAIN_TOKEN_PAN:0xC892F1D09a7BEF98d65e7f9bD4642d36BC506441}
+            panavax: !ENV ${BNB_CHAIN_TOKEN_PANAVAX:0x6A7ABeea69f01A225104Cc6AD44B88D15056a3fA}
+            panbnb: !ENV ${BNB_CHAIN_TOKEN_PANBNB:0x5538e600dc919f72858dd4D4F5E4327ec6f2af60}
+            pancelo: !ENV ${BNB_CHAIN_TOKEN_PANCELO:0xa562C9Ef83dcfF9ee6bB90FcC7b0DbEFC8C0e8f4}
+            pancro: !ENV ${BNB_CHAIN_TOKEN_PANCRO:0xC92D9f4169fCD5FcA1A15A177b98f43F0Eb90e3f}
+            paneth: !ENV ${BNB_CHAIN_TOKEN_PANETH:0x5e447968d4a177fE7bFB8877cA12aE20Bd60dD85}
+            panftm: !ENV ${BNB_CHAIN_TOKEN_PANFTM:0xFA5f89e332f4961574F78514a7e369FdD71f1E10}
+            panmatic: !ENV ${BNB_CHAIN_TOKEN_PANMATIC:0xFd9a7A3fDA872eA8E948b3b41f2dcb6CB40ed277}
+            pansol: !ENV ${BNB_CHAIN_TOKEN_PANSOL}
     celo:
         active: !ENV tag:yaml.org,2002:bool ${CELO_ACTIVE:true}
         provider: !ENV ${CELO_PROVIDER:https://alfajores-forno.celo-testnet.org}
