@@ -1919,13 +1919,13 @@ files = [
 
 [[package]]
 name = "pantos-client-library"
-version = "2.0.1"
+version = "2.0.2"
 description = "Client library for engaging with the Pantos system"
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "pantos_client_library-2.0.1-py3-none-any.whl", hash = "sha256:cb0459910ccdfe485cd414f29c8a7a9cd49b7d4c59646960b9d674f258f1c8af"},
-    {file = "pantos_client_library-2.0.1.tar.gz", hash = "sha256:02d29222970b45b147b3d2f9f6039f7e6831eb76b877c2f0782788198b451f33"},
+    {file = "pantos_client_library-2.0.2-py3-none-any.whl", hash = "sha256:c1b4a306cf5db64a17669b31fee2529837584ae7a71b7715dd70d9222b0b90b0"},
+    {file = "pantos_client_library-2.0.2.tar.gz", hash = "sha256:47d5a14df0bb657e273c1b5e1b2df4db7fbfd6ab6906a12dc35f39390f412450"},
 ]
 
 [package.dependencies]
@@ -3364,4 +3364,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "7b3c5cf52138008af5beb2ac19ec949b6d28c0f6cb2b351ad1544b3e6a817aea"
+content-hash = "001394613d894eba68a402b4b09dbbca9bc8b1984446e1d077d2c2b756721de4"
