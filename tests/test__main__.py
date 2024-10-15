@@ -29,6 +29,9 @@ MOCK_CLI_BLOCKCHAIN_COMMON_CONFIG = {
 }
 
 MOCK_CLI_CONFIG_DICT = {
+    "application": {
+        "debug": False
+    },
     "blockchains": {
         'avalanche': MOCK_CLI_BLOCKCHAIN_COMMON_CONFIG,
         'bnb_chain': MOCK_CLI_BLOCKCHAIN_COMMON_CONFIG,
@@ -91,14 +94,14 @@ MOCK_LIB_CONFIG_DICT = {
 }
 
 
-@unittest.mock.patch('pantos.client.library.configuration.config')
-@unittest.mock.patch('pantos.cli.configuration.config')
+@unittest.mock.patch('pantos.cli.__main__._load_private_key',
+                     return_value='key')
+@unittest.mock.patch('pantos.cli.__main__.config')
 @unittest.mock.patch('pantos.client.library.api.retrieve_token_balance')
 def test_balance(mock_retrieve_token_balance, mock_cli_config, mock_lib_config,
                  capsys):
     mock_retrieve_token_balance.return_value = decimal.Decimal('0.4')
     mock_cli_config.__getitem__.side_effect = MOCK_CLI_CONFIG_DICT.__getitem__
-    mock_lib_config.__getitem__.side_effect = MOCK_LIB_CONFIG_DICT.__getitem__
 
     cmd = f'pantos.cli balance -k {TEST_KEYSTORE} bnb_chain pan'
     expected = 'Your PAN token balance on BNB_CHAIN:\n0.4\n'
@@ -284,13 +287,13 @@ def test_bids_no_bids_available(mock_retrieve_service_node_bids,
     assert captured.out == expected
 
 
-@unittest.mock.patch('pantos.client.library.configuration.config')
-@unittest.mock.patch('pantos.cli.configuration.config')
+@unittest.mock.patch('pantos.cli.__main__._load_private_key',
+                     return_value='key')
+@unittest.mock.patch('pantos.cli.__main__.config')
 @unittest.mock.patch('pantos.client.library.api.transfer_tokens')
 def test_transfer(mock_transfer_tokens, mock_cli_config, mock_lib_config,
                   service_node, task_uuid, capsys):
     mock_cli_config.__getitem__.side_effect = MOCK_CLI_CONFIG_DICT.__getitem__
-    mock_lib_config.__getitem__.side_effect = MOCK_LIB_CONFIG_DICT.__getitem__
     mock_transfer_tokens.return_value = ServiceNodeTaskInfo(
         task_uuid, service_node)
 
