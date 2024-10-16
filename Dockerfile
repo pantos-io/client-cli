@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only
 FROM python:3.12-alpine AS build
 
 RUN apk update && apk add gcc libc-dev libffi-dev \
