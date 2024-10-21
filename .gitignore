@@ -9,7 +9,6 @@
 .vscode/
 build/
 dist/
-find.sh
-local/
+/local/
 .pytest_cache
 .mypy_cache

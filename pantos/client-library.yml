@@ -1,3 +1,7 @@
+protocol:
+    mainnet: !ENV ${PROTOCOL_MAINNET:1.0.0}
+    testnet: !ENV ${PROTOCOL_TESTNET:0.1.0}
+
 token_creator:
     url: !ENV ${TOKEN_CREATOR_URL:https://creatorb.testnet.pantos.io}
 
@@ -24,8 +28,8 @@ blockchains:
             pancelo: !ENV ${AVALANCHE_TOKEN_PANCELO:0x35846c1aA968ce9B643B88ff96DeE21164D0e44e}
             pancro: !ENV ${AVALANCHE_TOKEN_PANCRO:0xE31c64069E6f3275E6bb60293A9a6e9a8F7A346f}
             paneth: !ENV ${AVALANCHE_TOKEN_PANETH:0x5e447968d4a177fE7bFB8877cA12aE20Bd60dD85}
-            panftm: !ENV ${AVALANCHE_TOKEN_PANFTM:0xF23BdbAd9Ec3610c0CB475A58eEbf001F0DdED55}
-            panmatic: !ENV ${AVALANCHE_TOKEN_PANMATIC:0xFd9a7A3fDA872eA8E948b3b41f2dcb6CB40ed277}
+            panpol: !ENV ${AVALANCHE_TOKEN_PANPOL}
+            pans: !ENV ${AVALANCHE_TOKEN_PANS}
             pansol: !ENV ${AVALANCHE_TOKEN_PANSOL}
     bnb_chain:
         active: !ENV tag:yaml.org,2002:bool ${BNB_CHAIN_ACTIVE:true}
@@ -46,8 +50,8 @@ blockchains:
             pancelo: !ENV ${BNB_CHAIN_TOKEN_PANCELO:0xa562C9Ef83dcfF9ee6bB90FcC7b0DbEFC8C0e8f4}
             pancro: !ENV ${BNB_CHAIN_TOKEN_PANCRO:0xC92D9f4169fCD5FcA1A15A177b98f43F0Eb90e3f}
             paneth: !ENV ${BNB_CHAIN_TOKEN_PANETH:0x5e447968d4a177fE7bFB8877cA12aE20Bd60dD85}
-            panftm: !ENV ${BNB_CHAIN_TOKEN_PANFTM:0xFA5f89e332f4961574F78514a7e369FdD71f1E10}
-            panmatic: !ENV ${BNB_CHAIN_TOKEN_PANMATIC:0xFd9a7A3fDA872eA8E948b3b41f2dcb6CB40ed277}
+            panpol: !ENV ${BNB_CHAIN_TOKEN_PANPOL}
+            pans: !ENV ${BNB_CHAIN_TOKEN_PANS}
             pansol: !ENV ${BNB_CHAIN_TOKEN_PANSOL}
     celo:
         active: !ENV tag:yaml.org,2002:bool ${CELO_ACTIVE:true}
@@ -68,8 +72,8 @@ blockchains:
             pancelo: !ENV ${CELO_TOKEN_PANCELO:0x9b304A0B21C6B830298b2412e51Bc5Ba17e8b796}
             pancro: !ENV ${CELO_TOKEN_PANCRO:0xCD6dF7dBba253d2e14cb7DD8E1b2662CDb40C69F}
             paneth: !ENV ${CELO_TOKEN_PANETH:0x997DFc659ABBd30F3514Bde874E663bC82B0e701}
-            panftm: !ENV ${CELO_TOKEN_PANFTM:0xEAe1274dBdD006b5eA3197729BF5f11B8fbb427E}
-            panmatic: !ENV ${CELO_TOKEN_PANMATIC:0x30ce06f12960C46aC64542813e45E03164f412fD}
+            panpol: !ENV ${CELO_TOKEN_PANPOL}
+            pans: !ENV ${CELO_TOKEN_PANS}
             pansol: !ENV ${CELO_TOKEN_PANSOL}
     cronos:
         active: !ENV tag:yaml.org,2002:bool ${CRONOS_ACTIVE:true}
@@ -90,8 +94,8 @@ blockchains:
             pancelo: !ENV ${CRONOS_TOKEN_PANCELO:0x9b304A0B21C6B830298b2412e51Bc5Ba17e8b796}
             pancro: !ENV ${CRONOS_TOKEN_PANCRO:0xCD6dF7dBba253d2e14cb7DD8E1b2662CDb40C69F}
             paneth: !ENV ${CRONOS_TOKEN_PANETH:0x997DFc659ABBd30F3514Bde874E663bC82B0e701}
-            panftm: !ENV ${CRONOS_TOKEN_PANFTM:0xEAe1274dBdD006b5eA3197729BF5f11B8fbb427E}
-            panmatic: !ENV ${CRONOS_TOKEN_PANMATIC:0x30ce06f12960C46aC64542813e45E03164f412fD}
+            panpol: !ENV ${CRONOS_TOKEN_PANPOL}
+            pans: !ENV ${CRONOS_TOKEN_PANS}
             pansol: !ENV ${CRONOS_TOKEN_PANSOL}
     ethereum:
         active: !ENV tag:yaml.org,2002:bool ${ETHEREUM_ACTIVE:true}
@@ -112,52 +116,30 @@ blockchains:
             pancelo: !ENV ${ETHEREUM_TOKEN_PANCELO:0xEAe1274dBdD006b5eA3197729BF5f11B8fbb427E}
             pancro: !ENV ${ETHEREUM_TOKEN_PANCRO:0x30ce06f12960C46aC64542813e45E03164f412fD}
             paneth: !ENV ${ETHEREUM_TOKEN_PANETH:0x3eaFCb56D94FE1a029F727f652323062908D3185}
-            panftm: !ENV ${ETHEREUM_TOKEN_PANFTM:0xab52C5eADd0bFdFabF97A105a3B64B6F9323FA1b}
-            panmatic: !ENV ${ETHEREUM_TOKEN_PANMATIC:0x3728264a465F216Fd04B7420d484f8Da85BC3241}
+            panpol: !ENV ${ETHEREUM_TOKEN_PANPOL}
+            pans: !ENV ${ETHEREUM_TOKEN_PANS}
             pansol: !ENV ${ETHEREUM_TOKEN_PANSOL}
-    fantom:
-        active: !ENV tag:yaml.org,2002:bool ${FANTOM_ACTIVE:true}
-        provider: !ENV ${FANTOM_PROVIDER:https://rpc.ankr.com/fantom_testnet}
-        fallback_providers:
-            - !ENV ${FANTOM_FALLBACK_PROVIDER:https://rpc.ankr.com/fantom_testnet}
-        average_block_time: !ENV tag:yaml.org,2002:int ${FANTOM_AVERAGE_BLOCK_TIME:1}
-        blocks_per_query: !ENV tag:yaml.org,2002:int ${FANTOM_BLOCKS_PER_QUERY:2000}
-        chain_id: !ENV tag:yaml.org,2002:int ${FANTOM_CHAIN_ID:4002}
-        confirmations: !ENV tag:yaml.org,2002:int ${FANTOM_CONFIRMATIONS:3}
-        hub: !ENV ${FANTOM_HUB:0x4BC6A71D4C3D6170d0Db849fE19b8DbA18f1a7F5}
-        forwarder: !ENV ${FANTOM_FORWARDER:0xbBbebAB1c109De08599ae17e2977cD7D91eA2D3b}
-        tokens:
-            best: !ENV ${FANTOM_TOKEN_BEST:0x5e447968d4a177fE7bFB8877cA12aE20Bd60dD85}
-            pan: !ENV ${FANTOM_TOKEN_PAN:0x5538e600dc919f72858dd4D4F5E4327ec6f2af60}
-            panavax: !ENV ${FANTOM_TOKEN_PANAVAX:0xFd9a7A3fDA872eA8E948b3b41f2dcb6CB40ed277}
-            panbnb: !ENV ${FANTOM_TOKEN_PANBNB:0x7EFfCc0a130E452c2FB78bFEDBd02a33E03FD50d}
-            pancelo: !ENV ${FANTOM_TOKEN_PANCELO:0x9b304A0B21C6B830298b2412e51Bc5Ba17e8b796}
-            pancro: !ENV ${FANTOM_TOKEN_PANCRO:0xCD6dF7dBba253d2e14cb7DD8E1b2662CDb40C69F}
-            paneth: !ENV ${FANTOM_TOKEN_PANETH:0x997DFc659ABBd30F3514Bde874E663bC82B0e701}
-            panftm: !ENV ${FANTOM_TOKEN_PANFTM:0xEAe1274dBdD006b5eA3197729BF5f11B8fbb427E}
-            panmatic: !ENV ${FANTOM_TOKEN_PANMATIC:0x30ce06f12960C46aC64542813e45E03164f412fD}
-            pansol: !ENV ${FANTOM_TOKEN_PANSOL}
     polygon:
-        active: !ENV tag:yaml.org,2002:bool ${POLYGON_ACTIVE:false}
-        provider: !ENV ${POLYGON_PROVIDER:https://rpc.ankr.com/polygon_mumbai}
+        active: !ENV tag:yaml.org,2002:bool ${POLYGON_ACTIVE:true}
+        provider: !ENV ${POLYGON_PROVIDER:https://rpc.ankr.com/polygon_amoy}
         fallback_providers:
-            - !ENV ${POLYGON_FALLBACK_PROVIDER:https://rpc.ankr.com/polygon_mumbai}
+            - !ENV ${POLYGON_FALLBACK_PROVIDER:https://rpc.ankr.com/polygon_amoy}
         average_block_time: !ENV tag:yaml.org,2002:int ${POLYGON_AVERAGE_BLOCK_TIME:3}
         blocks_per_query: !ENV tag:yaml.org,2002:int ${POLYGON_BLOCKS_PER_QUERY:2000}
-        chain_id: !ENV tag:yaml.org,2002:int ${POLYGON_CHAIN_ID:80001}
-        confirmations: !ENV tag:yaml.org,2002:int ${POLYGON_CONFIRMATIONS:20}
-        hub: !ENV ${POLYGON_HUB:0x5C4B92cd0A956dedc14AF31fD474931540D8277B}
-        forwarder: !ENV ${POLYGON_FORWARDER:0xC458D148d1Cac769239629e744be37eDEf4F06A6}
+        chain_id: !ENV tag:yaml.org,2002:int ${POLYGON_CHAIN_ID:80002}
+        confirmations: !ENV tag:yaml.org,2002:int ${POLYGON_CONFIRMATIONS:200}
+        hub: !ENV ${POLYGON_HUB}
+        forwarder: !ENV ${POLYGON_FORWARDER}
         tokens:
-            best: !ENV ${POLYGON_TOKEN_BEST:0x5e447968d4a177fE7bFB8877cA12aE20Bd60dD85}
-            pan: !ENV ${POLYGON_TOKEN_PAN:0x5538e600dc919f72858dd4D4F5E4327ec6f2af60}
-            panavax: !ENV ${POLYGON_TOKEN_PANAVAX:0xFd9a7A3fDA872eA8E948b3b41f2dcb6CB40ed277}
-            panbnb: !ENV ${POLYGON_TOKEN_PANBNB:0x7EFfCc0a130E452c2FB78bFEDBd02a33E03FD50d}
-            pancelo: !ENV ${POLYGON_TOKEN_PANCELO:0x9b304A0B21C6B830298b2412e51Bc5Ba17e8b796}
-            pancro: !ENV ${POLYGON_TOKEN_PANCRO:0xCD6dF7dBba253d2e14cb7DD8E1b2662CDb40C69F}
-            paneth: !ENV ${POLYGON_TOKEN_PANETH:0x997DFc659ABBd30F3514Bde874E663bC82B0e701}
-            panftm: !ENV ${POLYGON_TOKEN_PANFTM:0xEAe1274dBdD006b5eA3197729BF5f11B8fbb427E}
-            panmatic: !ENV ${POLYGON_TOKEN_PANMATIC:0x30ce06f12960C46aC64542813e45E03164f412fD}
+            best: !ENV ${POLYGON_TOKEN_BEST}
+            pan: !ENV ${POLYGON_TOKEN_PAN}
+            panavax: !ENV ${POLYGON_TOKEN_PANAVAX}
+            panbnb: !ENV ${POLYGON_TOKEN_PANBNB}
+            pancelo: !ENV ${POLYGON_TOKEN_PANCELO}
+            pancro: !ENV ${POLYGON_TOKEN_PANCRO}
+            paneth: !ENV ${POLYGON_TOKEN_PANETH}
+            panpol: !ENV ${POLYGON_TOKEN_PANPOL}
+            pans: !ENV ${POLYGON_TOKEN_PANS}
             pansol: !ENV ${POLYGON_TOKEN_PANSOL}
     solana:
         active: !ENV tag:yaml.org,2002:bool ${SOLANA_ACTIVE:false}
@@ -178,6 +160,28 @@ blockchains:
             pancelo: !ENV ${SOLANA_TOKEN_PANCELO}
             pancro: !ENV ${SOLANA_TOKEN_PANCRO}
             paneth: !ENV ${SOLANA_TOKEN_PANETH}
-            panftm: !ENV ${SOLANA_TOKEN_PANFTM}
-            panmatic: !ENV ${SOLANA_TOKEN_PANMATIC}
+            panpol: !ENV ${SOLANA_TOKEN_PANPOL}
+            pans: !ENV ${SOLANA_TOKEN_PANS}
             pansol: !ENV ${SOLANA_TOKEN_PANSOL}
+    sonic:
+        active: !ENV tag:yaml.org,2002:bool ${SONIC_ACTIVE:true}
+        provider: !ENV ${SONIC_PROVIDER:https://rpc.testnet.soniclabs.com/}
+        fallback_providers:
+            - !ENV ${SONIC_FALLBACK_PROVIDER:https://rpc.testnet.soniclabs.com/}
+        average_block_time: !ENV tag:yaml.org,2002:int ${SONIC_AVERAGE_BLOCK_TIME:1}
+        blocks_per_query: !ENV tag:yaml.org,2002:int ${SONIC_BLOCKS_PER_QUERY:2000}
+        chain_id: !ENV tag:yaml.org,2002:int ${SONIC_CHAIN_ID:64165}
+        confirmations: !ENV tag:yaml.org,2002:int ${SONIC_CONFIRMATIONS:3}
+        hub: !ENV ${SONIC_HUB}
+        forwarder: !ENV ${SONIC_FORWARDER}
+        tokens:
+            best: !ENV ${SONIC_TOKEN_BEST}
+            pan: !ENV ${SONIC_TOKEN_PAN}
+            panavax: !ENV ${SONIC_TOKEN_PANAVAX}
+            panbnb: !ENV ${SONIC_TOKEN_PANBNB}
+            pancelo: !ENV ${SONIC_TOKEN_PANCELO}
+            pancro: !ENV ${SONIC_TOKEN_PANCRO}
+            paneth: !ENV ${SONIC_TOKEN_PANETH}
+            panpol: !ENV ${SONIC_TOKEN_PANPOL}
+            pans: !ENV ${SONIC_TOKEN_PANS}
+            pansol: !ENV ${SONIC_TOKEN_PANSOL}

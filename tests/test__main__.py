@@ -39,10 +39,10 @@ MOCK_CLI_CONFIG_DICT = {
         'cronos': MOCK_CLI_BLOCKCHAIN_COMMON_CONFIG,
         'ethereum': MOCK_CLI_BLOCKCHAIN_COMMON_CONFIG,
         'polygon': MOCK_CLI_BLOCKCHAIN_COMMON_CONFIG,
-        'fantom': {
+        'solana': {
             'active': False
         },
-        'solana': {
+        'sonic': {
             'active': False
         },
     }
@@ -77,9 +77,6 @@ MOCK_LIB_CONFIG_DICT = {
             'confirmations': 20,
             'chain_id': 99997
         },
-        'fantom': {
-            'active': False
-        },
         'polygon': {
             'active': True,
             'provider': '',
@@ -88,6 +85,9 @@ MOCK_LIB_CONFIG_DICT = {
             'chain_id': 99996
         },
         'solana': {
+            'active': False
+        },
+        'sonic': {
             'active': False
         },
     }
@@ -204,7 +204,7 @@ def test_balance_blockchain_not_active(mock_retrieve_token_balance,
     mock_cli_config.__getitem__.side_effect = MOCK_CLI_CONFIG_DICT.__getitem__
     mock_lib_config.__getitem__.side_effect = MOCK_LIB_CONFIG_DICT.__getitem__
 
-    cmd = f'pantos.cli balance -k {TEST_KEYSTORE} fantom pan'
+    cmd = f'pantos.cli balance -k {TEST_KEYSTORE} sonic pan'
 
     with unittest.mock.patch('sys.argv',
                              cmd.split(' ')), pytest.raises(SystemExit):
