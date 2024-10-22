@@ -16,8 +16,19 @@ jobs:
         steps:
             - uses: step-security/harden-runner@v2
               with:
-               disable-sudo: false
-               egress-policy: audit
+                disable-sudo: true
+                egress-policy: block
+                allowed-endpoints: >
+                  api.github.com:443
+                  auth.docker.io:443
+                  dl-cdn.alpinelinux.org:443
+                  files.pythonhosted.org:443
+                  ghcr.io:443
+                  github.com:443
+                  objects.githubusercontent.com:443
+                  production.cloudflare.docker.com:443
+                  pypi.org:443
+                  registry-1.docker.io:443
             
             - uses: actions/checkout@v4
             
