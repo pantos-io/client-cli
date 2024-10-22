@@ -1,0 +1,16 @@
+name: cli
+
+services:
+  cli:
+    image: pantosio/client-cli:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      x-bake:
+        tags:
+          - ${DOCKER_REGISTRY-pantosio}/client-cli:${DOCKER_TAG-local}
+          - ${DOCKER_REGISTRY-pantosio}/client-cli:${EXTRA_TAG-local}
+    environment:
+      - environment=testnet
+    command: ["--help"]
