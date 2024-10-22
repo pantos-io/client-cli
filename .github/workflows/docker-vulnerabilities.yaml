@@ -45,7 +45,7 @@ jobs:
                     --builder ${{ steps.buildx.outputs.name }} \
                     -f docker-compose.yml \
                     --load \
-                    .
+                    cli
               env:
                 DOCKER_TAG: analysis-latest
         
