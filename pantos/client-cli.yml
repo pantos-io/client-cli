@@ -27,13 +27,8 @@ blockchains:
         keystore:
             file: !ENV ${ETHEREUM_KEYSTORE_FILE:my_client.keystore}
             password: !ENV ${ETHEREUM_KEYSTORE_PASSWORD}
-    fantom:
-        active: !ENV tag:yaml.org,2002:bool ${FANTOM_ACTIVE:true}
-        keystore:
-            file: !ENV ${FANTOM_KEYSTORE_FILE:my_client.keystore}
-            password: !ENV ${FANTOM_KEYSTORE_PASSWORD}
     polygon:
-        active: !ENV tag:yaml.org,2002:bool ${POLYGON_ACTIVE:false}
+        active: !ENV tag:yaml.org,2002:bool ${POLYGON_ACTIVE:true}
         keystore:
             file: !ENV ${POLYGON_KEYSTORE_FILE:my_client.keystore}
             password: !ENV ${POLYGON_KEYSTORE_PASSWORD}
@@ -42,3 +37,8 @@ blockchains:
         keystore:
             file: !ENV ${SOLANA_KEYSTORE_FILE:my_client.keystore}
             password: !ENV ${SOLANA_KEYSTORE_PASSWORD}
+    sonic:
+        active: !ENV tag:yaml.org,2002:bool ${SONIC_ACTIVE:true}
+        keystore:
+            file: !ENV ${SONIC_KEYSTORE_FILE:my_client.keystore}
+            password: !ENV ${SONIC_KEYSTORE_PASSWORD}
