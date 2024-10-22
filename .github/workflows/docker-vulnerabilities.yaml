@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+  pull_request:
   schedule:
     # At the end of every day
     - cron: "0 0 * * *"
