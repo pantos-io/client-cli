@@ -1,5 +1,6 @@
 name: DockerVulnerabilities
 on:
+  pull_request: 
   schedule:
     # At the end of every day
     - cron: "0 0 * * *"
@@ -69,6 +70,7 @@ jobs:
                 format: 'sarif'
                 output: 'trivy-pantos-client-cli-results.sarif'
                 severity: 'CRITICAL,HIGH'
+                trivy-config: config/trivy.yaml
             
             - name: Upload Trivy scan results for ethereum node to GitHub Security tab
               uses: github/codeql-action/upload-sarif@v3
