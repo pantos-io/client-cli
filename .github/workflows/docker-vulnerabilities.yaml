@@ -19,6 +19,7 @@ jobs:
                 disable-sudo: true
                 egress-policy: block
                 allowed-endpoints: >
+                  pkg-containers.githubusercontent.com:443
                   api.github.com:443
                   auth.docker.io:443
                   dl-cdn.alpinelinux.org:443
