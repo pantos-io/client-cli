@@ -1,0 +1,24 @@
+name: Publish dev release
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and attach .deb and .whl package
+    if: github.repository == 'pantos-io/client-cli'
+    uses: ./.github/workflows/build.yml
+    secrets: 'inherit'
+    with:
+      version: development
+      environment: main
+
+  publish-docker:
+    uses: ./.github/workflows/publish-docker.yaml
+    if: github.repository == 'pantos-io/client-cli'
+    needs: build
+    secrets: 'inherit'
+    with:
+      tag: development
+      environment: main
