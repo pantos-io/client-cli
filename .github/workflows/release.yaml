@@ -37,46 +37,21 @@ jobs:
   build:
     name: Build Package
     needs: define-environment
-    runs-on: ubuntu-latest
-    steps:
-      - uses: step-security/harden-runner@v2
-        with:
-          disable-sudo: true
-          egress-policy: audit
+    uses: ./.github/workflows/build.yaml
+    secrets: 'inherit'
+    with:
+      version: ${{ needs.define-environment.outputs.version }}
+      environment: ${{ github.event.release.prerelease && 'beta' || 'prod' }}
 
-      - uses: actions/checkout@v4
-
-      - uses: pantos-io/ci-workflows/.github/actions/install-poetry@v1
-
-      - name: Build package
-        run: |
-          make check-version VERSION=${{ needs.define-environment.outputs.version }}
-          make build
-
-      - name: Freeze dependencies
-        run: |
-          poetry self add poetry-plugin-freeze
-          poetry freeze-wheel
-          # Copy the file "METADATA" from the wheel to "PKG-INFO" in the sdist
-          # Unzip wheel and sdist
-          mkdir tmp
-          cp dist/*.whl tmp/wheel.zip
-          unzip tmp/wheel.zip -d tmp/wheel/
-          # Untar sdist
-          mkdir tmp/sdist
-          tar -xzf dist/*.tar.gz -C tmp/sdist/
-          # Copy the file
-          cp tmp/wheel/*.dist-info/METADATA tmp/sdist/*/PKG-INFO
-          # Tar the sdist again
-          tar -czf dist/$(ls dist | grep .tar.gz) -C tmp/sdist/ .
-          # Remove the temporary directories
-          rm -rf tmp
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: dist
+  publish-docker:
+    name: Publish docker image for ${{ needs.define-environment.outputs.deployment_longname }}
+    needs: [define-environment, build]
+    uses: ./.github/workflows/publish-docker.yaml
+    secrets: 'inherit'
+    with:
+      tag: ${{ github.event.release.tag_name }}${{ needs.define-environment.outputs.deployment_environment }}
+      environment: dockerhub
+      extra_tag: ${{ github.event.release.prerelease && 'beta' || 'latest' }}
 
   publish-pypi:
     name: Publish to PyPi
@@ -121,21 +96,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: build
-          path: dist
-
-      - name: List directory
-        run: |
-          mkdir -p release
-          cp dist/*.whl release/
-
-      - uses: sigstore/gh-action-sigstore-python@v2.1.1
-        with:
-          inputs: release/*
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: signed-build
-          path: release/*.whl
+          path: release
 
       - name: Upload release assets
         uses: svenstaro/upload-release-action@v2
