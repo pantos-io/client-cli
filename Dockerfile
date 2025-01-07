@@ -4,7 +4,7 @@ FROM python:3.12-alpine AS build
 RUN apk update && apk add gcc libc-dev libffi-dev \
   && apk cache clean
 
-RUN python3 -m pip install poetry
+RUN python3 -m pip install 'poetry<2.0.0'
 
 WORKDIR /pantos-cli
 

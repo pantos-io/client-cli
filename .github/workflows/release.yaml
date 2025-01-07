@@ -2,7 +2,6 @@ name: Release Workflow
 
 run-name: ${{ (github.event.release.prerelease && 'Beta') || 'Prod'}} Release for ${{ github.repository }} - ${{ github.event.release.tag_name }}
 
-
 on:
   release:
     # Triggered on Pre-Releases and Releases
