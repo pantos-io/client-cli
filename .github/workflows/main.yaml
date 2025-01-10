@@ -8,7 +8,7 @@ jobs:
   build:
     name: Build and attach .deb and .whl package
     if: github.repository == 'pantos-io/client-cli'
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/build.yaml
     secrets: 'inherit'
     with:
       version: development
