@@ -50,7 +50,7 @@ https://python-poetry.org/docs/#installing-with-the-official-installer
 or
 https://python-poetry.org/docs/#installing-with-pipx
 
-By default poetry creates the venv directory under under ```{cache-dir}/virtualenvs```. If you opt for creating the virtualenv inside the project’s root directory, execute the following command:
+By default poetry creates the venv directory under ```{cache-dir}/virtualenvs```. If you opt for creating the virtualenv inside the project’s root directory, execute the following command:
 
 ```bash
 poetry config virtualenvs.in-project true
