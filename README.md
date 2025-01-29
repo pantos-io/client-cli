@@ -4,7 +4,6 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pantos-io_client-cli2&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pantos-io_client-cli2)
 
 
-
 # Pantos Client CLI
 
 ## 1. Introduction
@@ -15,7 +14,7 @@ Welcome to the documentation for Pantos Client CLI, a powerful tool for engaging
 
 ### 1.2 Features
 
-The Pantos Client CLI offers the following functionalities:
+The Pantos Client CLI offers the following functionality:
 
 1. Retrieve the balance of a token
 2. Retrieve the service node bids
